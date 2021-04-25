@@ -41,7 +41,7 @@ DEBUG_CFLAGS := $(CFLAGS) -Wfatal-errors -g -Og -DDEBUG
 # Build targets & rules
 ########################
 
-all: prep hc hc_debug
+all: prep hc debug
 
 
 # Standard (hc) build rules
@@ -54,9 +54,11 @@ $(HC_EXE): $(HC_OBJECTS) $(LSDTOPOTOOLS_OBJECTS)
 $(HC_BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp
 	@echo " $(CXX) $(HC_CFLAGS) $(IFLAGS) -c -o $@ $<"; $(CXX) $(HC_CFLAGS) $(IFLAGS) -c -o $@ $<
 
+-include $(HC_OBJECTS:.o=.d)  # ensures rebuild after any header (.hpp) or template (.tpp) files change (only works with GCC)
+
 
 # Debug (hc_debug) build rules
-hc_debug: $(DEBUG_EXE)
+debug: $(DEBUG_EXE)
 
 $(DEBUG_EXE): $(DEBUG_OBJECTS) $(LSDTOPOTOOLS_OBJECTS)
 	@echo  " \n Linking... \n"
@@ -64,6 +66,8 @@ $(DEBUG_EXE): $(DEBUG_OBJECTS) $(LSDTOPOTOOLS_OBJECTS)
 
 $(DEBUG_BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp
 	@echo " $(CXX) $(DEBUG_CFLAGS) $(IFLAGS) -c -o $@ $<"; $(CXX) $(DEBUG_CFLAGS) $(IFLAGS) -c -o $@ $<
+
+-include $(DEBUG_OBJECTS:.o=.d)  # ensures rebuild after any header (.hpp) or template (.tpp) files change (only works with GCC)
 
 
 # LDSTopoTools build rules
@@ -100,4 +104,4 @@ cleanbin:
 	@echo " Cleaning executables: rm -rf bin"; rm -rf bin
 
 
--include $(OBJECTS:.o=.d)  # ensures rebuild after any header (.hpp) or template (.tpp) files change (only works with GCC)
+
