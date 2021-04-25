@@ -1,0 +1,22 @@
+# MPI wrapper command to compile C++ code
+CXX := mpic++
+
+# Location of LSDTopoTools2 
+LSDTOPOTOOLS_DIR := lib/LSDTopoTools2
+
+# Location of LibGeoDecomp install base dir
+GEODECOMP_DIR := /Users/${USER}/libgeodecomp/with_pnetcdf
+
+# Location of LibGeoDecomp tools dir (provides access to the MPI typemaps generator, only necessary if developing the code)
+GEODECOMP_SRC_DIR := /Users/${USER}/libgeodecomp/libgeodecomp/tools
+
+# Location of Boost library install base dir
+BOOST_DIR := /usr/local/Cellar/boost/1.72.0_3
+
+# Location of PnetCDF library dir
+PNETCDF_DIR := /Users/${USER}/pnetcdf/1.12.1
+
+# Location of the MPI library install base dir
+MPI_DIR :=  /usr/local/Cellar/mpich/3.3.2_1/
+
+
