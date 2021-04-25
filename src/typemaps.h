@@ -3,7 +3,7 @@
 
 #include <mpi.h>
 #include <complex>
-#include <hclite/cell.hpp>
+#include <src/cell.hpp>
 
 extern MPI_Datatype MPI_CELL;
 

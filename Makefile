@@ -14,7 +14,7 @@ SOURCES := $(notdir $(shell ls $(SOURCE_DIR)/*.cpp))
 OBJECTS := $(SOURCES:.cpp=.o)
 
 IFLAGS := -I $(INCLUDE_DIR) -I $(LSDTOPOTOOLS_INCLUDE_DIR) -I $(GEODECOMP_DIR)/include -I $(BOOST_DIR)/include -I $(PNETCDF_DIR)/include -I ./ -I lib -I lib/TNT
-CFLAGS += -std=c++11 $(GITREV) -MD
+CFLAGS := -std=c++11 $(GITREV) -MD
 LDFLAGS := -L $(GEODECOMP_DIR)/lib -L $(BOOST_DIR)/lib 
 LIBS := -lgeodecomp -lboost_date_time
 
@@ -86,7 +86,7 @@ typemaps: # only necessary to generate new MPI typemaps run if the model has bee
 	@$(GEODECOMP_SRC_DIR)/typemapgenerator/generate.rb -S typemaps-doxygen-docs/xml typemaps
 	@sed -i '' 's/CellType/int/g' typemaps/typemaps.cpp  # correct mistake in LibGeoDecomp typemap generation script for enums, see https://github.com/gentryx/libgeodecomp/issues/72
 	@mv typemaps/typemaps.* $(SOURCE_DIR)/
-	@echo " New typemaps saved in hclite/"
+	@echo " New typemaps saved in src/"
 	@rm -rf typemaps
 	@rm -rf typemaps-doxygen-docs
 
