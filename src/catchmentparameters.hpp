@@ -10,14 +10,22 @@ public:
   
   void read_parameters(std::string parameter_filename);
   
-  // simulation options
-  int no_of_iterations = 100;
+  // simulation parameters
+  unsigned no_of_iterations = 100;
   std::string simulator = "hipar";
   bool debug = false;
+
+    
+  // for debugging only
   int xmax = 10;
   int ymax = 10;
-  
-  // visualisation options
+
+    
+  // input
+  std::string dem_netcdf_file;
+
+    
+  // output
   bool elevation_ppm = false;
   bool elevation_bov = false;
   bool elevation_visit = false;
@@ -36,8 +44,7 @@ public:
   int water_depth_netcdf_interval = 1; 
   int ppm_pixels_per_cell = 10;
   
-  std::string dem_read_extension;
-  std::string dem_file;
+
   
   
 };

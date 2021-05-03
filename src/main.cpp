@@ -14,6 +14,7 @@
 #include <libgeodecomp/io/bovwriter.h>
 #include <libgeodecomp/io/parallelwriter.h>
 #include <libgeodecomp/io/pnetcdfwriter.h>
+#include <libgeodecomp/io/pnetcdfinitializer.h>
 #include <typemaps.h>
 #include <start.hpp>
 #include <cell.hpp>
@@ -52,7 +53,8 @@ int main(int argc, char *argv[])
     // Read model parameters on each rank (can replace with MPI_Bcast from rank 0 should overhead ever become noticeable)
     CatchmentParameters parameters = CatchmentParameters(parameter_filename);
     
-    LibGeoDecomp::SimpleInitializer<Cell> *initialiser = 0;
+    //LibGeoDecomp::SimpleInitializer<Cell> *initialiser = 0;
+    LibGeoDecomp::Initializer<Cell> *initialiser = 0;
     
     
     if(parameters.debug)
@@ -60,7 +62,13 @@ int main(int argc, char *argv[])
 	// Initialise grid (each rank initialises its own subgrid)
 	initialiser = new DebugCellInitializer(parameters.xmax, parameters.ymax, parameters.no_of_iterations);
     }
-    
+    else
+    {
+	initialiser = new LibGeoDecomp::PnetCDFInitializer<Cell>(parameters.dem_netcdf_file, parameters.no_of_iterations);
+    }
+
+
+
     
     if(parameters.simulator == "serial")
     {

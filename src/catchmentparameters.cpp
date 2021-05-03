@@ -67,23 +67,13 @@ void CatchmentParameters::read_parameters(std::string parameter_filename)
 	}
 
       // Specify elevation file to initialise from
-      else if (lower == "dem_extension")
+      else if (lower == "dem_netcdf_file")
 	{
-	  dem_read_extension = value;
-	  dem_read_extension = RemoveControlCharactersFromEndOfString(
-								      dem_read_extension);
+	  dem_netcdf_file = value;
+	  dem_netcdf_file = RemoveControlCharactersFromEndOfString(dem_netcdf_file);
 	  if(LibGeoDecomp::MPILayer().rank() == 0)
 	    {
-	      std::cout << "DEM file extension: " << dem_read_extension << std::endl;
-	    } 
-	}
-      else if (lower == "dem_file")
-	{
-	  dem_file = value;
-	  dem_file = RemoveControlCharactersFromEndOfString(dem_file);
-	  if(LibGeoDecomp::MPILayer().rank() == 0)
-	    {
-	      std::cout << "DEM file: " << dem_file << std::endl;
+	      std::cout << "DEM NetCDF file: " << dem_netcdf_file << std::endl;
 	    }
 	}
 
