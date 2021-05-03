@@ -34,7 +34,7 @@ HC_CFLAGS := $(CFLAGS) -Wfatal-errors -O3
 DEBUG_BUILD_DIR = build/debug
 DEBUG_EXE = bin/hc_debug
 DEBUG_OBJECTS = $(addprefix $(DEBUG_BUILD_DIR)/, $(OBJECTS))
-DEBUG_CFLAGS := $(CFLAGS) -Wfatal-errors -g -Og -DDEBUG
+DEBUG_CFLAGS := $(CFLAGS) -Wfatal-errors -g -Og -DHC_DEBUG
 
 
 ########################

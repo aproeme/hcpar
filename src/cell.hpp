@@ -58,7 +58,7 @@ public:
 };
 
 
-#ifdef DEBUG
+#ifdef HC_DEBUG
 #include "debugupdate.tpp"
 #else
 #include "update.tpp"
