@@ -23,7 +23,7 @@ public:
     
   // input
   std::string dem_netcdf_file;
-
+  std::string dem_netcdf_variable;
     
   // output
   bool elevation_ppm = false;

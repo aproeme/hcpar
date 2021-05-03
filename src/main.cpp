@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-	initialiser = new LibGeoDecomp::PnetCDFInitializer<Cell>(parameters.dem_netcdf_file, parameters.no_of_iterations);
+	initialiser = new LibGeoDecomp::PnetCDFInitializer<Cell>(parameters.dem_netcdf_file, parameters.dem_netcdf_variable, parameters.no_of_iterations);
     }
 
 
