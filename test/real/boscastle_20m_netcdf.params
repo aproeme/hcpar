@@ -1,0 +1,7 @@
+simulator: 		 striping
+no_of_iterations:        100
+dem_netcdf_file:         boscastle_square_20m.nc
+dem_netcdf_variable:     Band1
+
+elevation_netcdf:        yes
+water_depth_netcdf:      yes

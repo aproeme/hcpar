@@ -32,22 +32,6 @@ int main(int argc, char *argv[])
     Typemaps::initializeMaps(); // initialize custom typemaps for HAIL-CAESAR
     LibGeoDecomp::MPILayer().barrier();
   
-    //
-    /* CHECK WHETHER APITraits are actually being set! (should be done by including cell.hpp?)
-       if(LibGeoDecomp::MPILayer().rank() == 0)
-       {
-       if(LibGeoDecomp::APITraits::SelectFixedCoordsOnlyUpdate<Cell>::Value() == false)
-       {
-       std::cout << "SelectFixedCoordsOnlyUpdate<Cell>::Value().bool() = false" << std::endl;
-       }
-       else
-       {
-       std::cout << "SelectFixedCoordsOnlyUpdate<Cell>::Value().bool() = true" << std::endl;
-       }
-       }
-    */  
-  
-
     start(argc, argv);   // Print info to stdout and validate input 
     std::string parameter_filename(argv[1]);
     
