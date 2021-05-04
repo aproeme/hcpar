@@ -73,7 +73,7 @@ void CatchmentParameters::read_parameters(std::string parameter_filename)
 	  dem_netcdf_file = RemoveControlCharactersFromEndOfString(dem_netcdf_file);
 	  if(LibGeoDecomp::MPILayer().rank() == 0)
 	    {
-	      std::cout << "DEM NetCDF file: " << dem_netcdf_file << std::endl;
+	      std::cout << "DEM netCDF file: " << dem_netcdf_file << std::endl;
 	    }
 	}
       // Specify name of variable in netCDF file that stores elevation data
@@ -83,7 +83,7 @@ void CatchmentParameters::read_parameters(std::string parameter_filename)
 	  dem_netcdf_variable = RemoveControlCharactersFromEndOfString(dem_netcdf_variable);
 	  if(LibGeoDecomp::MPILayer().rank() == 0)
 	    {
-	      std::cout << "DEM NetCDF variable: " << dem_netcdf_variable << std::endl;
+	      std::cout << "DEM netCDF variable: " << dem_netcdf_variable << std::endl;
 	    }
 	}
 

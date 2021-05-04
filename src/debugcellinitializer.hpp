@@ -11,7 +11,6 @@ using namespace TNT;
 class DebugCellInitializer : public LibGeoDecomp::SimpleInitializer<Cell>
 {
 public:
-  // constructor
   DebugCellInitializer(int xmax, int ymax, unsigned no_of_iterations);
 
   DebugCellInitializer(int xmax, int ymax, Array2D<double>& elevation_in, Array2D<double>& water_depth_in, unsigned no_of_iterations);

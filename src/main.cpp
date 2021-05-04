@@ -20,6 +20,7 @@
 #include <cell.hpp>
 #include <selectmpidatatype.tpp>
 #include <debugcellinitializer.hpp>
+#include <netcdfinitializer.hpp>
 #include <catchmentparameters.hpp>
 
 
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
     
     //LibGeoDecomp::SimpleInitializer<Cell> *initialiser = 0;
     LibGeoDecomp::Initializer<Cell> *initialiser = 0;
-    
+
     
     if(parameters.debug)
     {
@@ -64,7 +65,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-	initialiser = new LibGeoDecomp::PnetCDFInitializer<Cell>(parameters.dem_netcdf_file, parameters.dem_netcdf_variable, parameters.no_of_iterations);
+	initialiser = new NetCDFInitializer(parameters);
     }
 
 
@@ -135,20 +136,22 @@ int main(int argc, char *argv[])
 	if(parameters.elevation_netcdf)
 	{
 	    LibGeoDecomp::PnetCDFWriter<Cell> *elevationPnetCDFWriter = new LibGeoDecomp::PnetCDFWriter<Cell>(
-		LibGeoDecomp::Coord<2>(parameters.xmax, parameters.ymax),
+		initialiser->gridDimensions(),
 		LibGeoDecomp::Selector<Cell>(&Cell::elevation, "elevation"),
 		"elevation",
-		parameters.elevation_netcdf_interval);
+		parameters.elevation_netcdf_interval,
+	        parameters.no_of_iterations);
 		
 	    sim->addWriter(elevationPnetCDFWriter);
 	}
 	if(parameters.water_depth_netcdf)
 	{
 	    LibGeoDecomp::PnetCDFWriter<Cell> *waterDepthPnetCDFWriter = new LibGeoDecomp::PnetCDFWriter<Cell>(
-		LibGeoDecomp::Coord<2>(parameters.xmax, parameters.ymax),
+		initialiser->gridDimensions(),
 		LibGeoDecomp::Selector<Cell>(&Cell::water_depth, "water_depth"),
 		"water_depth",
-		parameters.water_depth_netcdf_interval);
+		parameters.water_depth_netcdf_interval,
+		parameters.no_of_iterations);
 	    
 	    sim->addWriter(waterDepthPnetCDFWriter);
 	}

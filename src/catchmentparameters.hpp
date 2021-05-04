@@ -17,8 +17,8 @@ public:
 
     
   // for debugging only
-  int xmax = 10;
-  int ymax = 10;
+  int xmax;
+  int ymax;
 
     
   // input
