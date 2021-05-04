@@ -38,23 +38,56 @@ public:
     CellType celltype;
     double elevation;
     double water_depth;
-    double qx;
-    double qy;
+    double qx, qy;
+    double DX, DY;
+    double edgeslope;
+    double no_data_value;
+    double hflow_threshold;
+    double mannings;
+    double froude_limit;
+    double gravity = 1.0;
     
-    // Constructor
     Cell(CellType celltype_in = INTERNAL,
 	 double elevation_in = 0.0,
 	 double water_depth_in = 0.0,
 	 double qx_in = 0.0,
-	 double qy_in = 0.0) :
+	 double qy_in = 0.0,
+	 double DX = 1.0,
+	 double DY = 1.0,
+	 double edgeslope = 1.0,
+	 double no_data_value=-9999,
+	 double hflow_threshold=1.0,
+	 double mannings = 1.0,
+	 double froude_limit = 1.0) :
 	celltype(celltype_in),
 	elevation(elevation_in),
 	water_depth(water_depth_in),
 	qx(qx_in),
-	qy(qy_in)
+	qy(qy_in),
+	DX(DX),
+	DY(DY),
+	edgeslope(edgeslope),
+	no_data_value(no_data_value),
+	hflow_threshold(hflow_threshold),
+	mannings(mannings),
+	froude_limit(froude_limit)
 	{}
     
     template<typename COORD_MAP> inline void update(const COORD_MAP& neighborhood, unsigned nanoStep);
+    #ifndef HC_DEBUG
+    template<typename COORD_MAP> inline void initialise_grid_value_updates(const COORD_MAP& neighborhood);
+    template<typename COORD_MAP> inline void catchment_waterinputs(const COORD_MAP& neighborhood);
+    template<typename COORD_MAP> inline void flow_route_x(const COORD_MAP& neighborhood);
+    template<typename COORD_MAP> inline void flow_route_y(const COORD_MAP& neighborhood);
+    template<typename COORD_MAP> inline void update_qx(const COORD_MAP& neighborhood, double hflow, double tempslope, double local_time_factor);
+    template<typename COORD_MAP> inline void update_qy(const COORD_MAP& neighborhood, double hflow, double tempslope, double local_time_factor);
+    inline void update_q(const double &q_old, double &q_new, double hflow, double tempslope, double local_time_factor);
+    inline void froude_check(double &q, double hflow);
+    template<typename COORD_MAP> inline void discharge_check(const COORD_MAP& neighborhood, double &q, double neighbour_water_depth, double Delta);
+    template<typename COORD_MAP> inline void depth_update(const COORD_MAP& neighborhood);
+    template<typename COORD_MAP> inline void update_water_depth(const COORD_MAP& neighborhood, double east_qx_old, double south_qy_old, double local_time_factor);
+    #endif
+    
 };
 
 
