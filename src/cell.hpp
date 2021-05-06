@@ -2,14 +2,7 @@
 #define HC_CELL_H
 
 #include <libgeodecomp/misc/apitraits.h>
-
-/*
-  #define here_old neighborhood[LibGeoDecomp::Coord<2>( 0, 0)]
-  #define west_old neighborhood[LibGeoDecomp::Coord<2>(-1, 0)]
-  #define east_old neighborhood[LibGeoDecomp::Coord<2>( 1, 0)]
-  #define north_old neighborhood[LibGeoDecomp::Coord<2>( 0, -1)]
-  #define south_old neighborhood[LibGeoDecomp::Coord<2>( 0,  1)]
-*/
+#include <libgeodecomp/storage/gridbase.h>
 
 #define here_old neighborhood[LibGeoDecomp::FixedCoord<  0,  0 >()]
 #define west_old neighborhood[LibGeoDecomp::FixedCoord< -1,  0 >()]
@@ -73,8 +66,13 @@ public:
 	froude_limit(froude_limit)
 	{}
     
+    
+    static void grid(LibGeoDecomp::GridBase<Cell, 2> *localGrid, LibGeoDecomp::Coord<2> globalDimensions);
+    // static because other classes (initializers) should be able to call Cell::grid() without instantiating a Cell
+    
     template<typename COORD_MAP> inline void update(const COORD_MAP& neighborhood, unsigned nanoStep);
-    #ifndef HC_DEBUG
+    
+#ifndef HC_DEBUG
     template<typename COORD_MAP> inline void initialise_grid_value_updates(const COORD_MAP& neighborhood);
     template<typename COORD_MAP> inline void catchment_waterinputs(const COORD_MAP& neighborhood);
     template<typename COORD_MAP> inline void flow_route_x(const COORD_MAP& neighborhood);
@@ -86,7 +84,9 @@ public:
     template<typename COORD_MAP> inline void discharge_check(const COORD_MAP& neighborhood, double &q, double neighbour_water_depth, double Delta);
     template<typename COORD_MAP> inline void depth_update(const COORD_MAP& neighborhood);
     template<typename COORD_MAP> inline void update_water_depth(const COORD_MAP& neighborhood, double east_qx_old, double south_qy_old, double local_time_factor);
-    #endif
+#endif
+    
+    
     
 };
 
