@@ -13,11 +13,10 @@ void CatchmentParameters::read_parameters(std::string parameter_filename)
 {
   if(LibGeoDecomp::MPILayer().rank() == 0)
     {
-      std::cout << "Initialising the model parameters..." << std::endl;
+      std::cout << "Reading the model parameters..." << std::endl;
     }
   
   std::ifstream infile;
-  // Open the parameter file
   infile.open(parameter_filename.c_str());
   std::string parameter, value, lower, lower_val;
   std::string bc;
@@ -47,60 +46,80 @@ void CatchmentParameters::read_parameters(std::string parameter_filename)
       // specify alternative grid dimensions with xmax & ymax in parameter file
       if (lower == "debug")
 	{
-	  debug = (value == "yes") ? true : false;
+	  setBoolean(debug, value);
 	}
       else if (lower == "xmax")
 	{
-	  xmax = atoi(value.c_str());
-	  if(LibGeoDecomp::MPILayer().rank() == 0)
-	    {
-	      std::cout << "xmax: " << xmax  << std::endl;
-	    }
+	  setInteger(xmax, "xmax", value);
 	}
       else if (lower == "ymax")
 	{
-	  ymax = atoi(value.c_str());
-	  if(LibGeoDecomp::MPILayer().rank() == 0)
-	    {
-	      std::cout << "ymax: " << ymax  << std::endl;
-	    }
+	  setInteger(ymax, "ymax", value);
 	}
-
+      
       // Specify elevation file to initialise from
       else if (lower == "dem_netcdf_file")
 	{
-	  dem_netcdf_file = value;
-	  dem_netcdf_file = RemoveControlCharactersFromEndOfString(dem_netcdf_file);
-	  if(LibGeoDecomp::MPILayer().rank() == 0)
-	    {
-	      std::cout << "DEM netCDF file: " << dem_netcdf_file << std::endl;
-	    }
+	  setString(dem_netcdf_file, "DEM netCDF file", value);
 	}
       // Specify name of variable in netCDF file that stores elevation data
       else if (lower == "dem_netcdf_variable")
 	{
-	  dem_netcdf_variable = value;
-	  dem_netcdf_variable = RemoveControlCharactersFromEndOfString(dem_netcdf_variable);
-	  if(LibGeoDecomp::MPILayer().rank() == 0)
-	    {
-	      std::cout << "DEM netCDF variable: " << dem_netcdf_variable << std::endl;
-	    }
+	  setString(dem_netcdf_variable, "DEM netCDF variable", value);
 	}
 
+      
+      
 
+      //=-=-=-=-=-=-=-=-=-=-=-=-=-=
+      // Hydrology
+      //=-=-=-=-=-=-=-=-=-=-=-=-=-=
+      else if (lower == "slope_on_edge_cell")
+	{
+	  setDouble(edgeslope, "Slope on edge cells", value);
+	}
+      else if (lower == "hflow_threshold")
+	{
+	  setDouble(hflow_threshold, "Horizontal flow threshold", value);
+	}
+      else if (lower == "courant_number")
+	{
+	  setDouble(courant_number, "Courant number", value);
+	}
+      else if (lower == "mannings_n")
+	{
+	  setDouble(mannings, "Manning's n value", value);
+	}
+      else if (lower == "froude_num_limit")
+	{
+	  setDouble(froude_limit, "Froude number limit", value);
+	}
+      
+      
       //=-=-=-=-=-=-=-=-=-=-=-=-=-=
       // Numerical
       //=-=-=-=-=-=-=-=-=-=-=-=-=-=
       else if (lower == "no_of_iterations")
 	{
-	  no_of_iterations = atoi(value.c_str());
-	  if(LibGeoDecomp::MPILayer().rank() == 0)
-	    {
-	      std::cout << "no of iterations: " << no_of_iterations << std::endl;
-	    }
+	  setUnsignedInteger(no_of_iterations, "Number of iterations", value);
+	}
+      else if (lower == "progress_interval")
+	{
+	  setUnsignedInteger(progress_interval, "Interval reporting progress to stdout", value);
+	}
+      else if (lower == "DX")
+	{
+	  setDouble(DX, "DX", value);
+	}
+      else if (lower == "DY")
+	{
+	  setDouble(DY, "DY", value);
+	}
+      else if (lower == "timestep")
+	{
+	  setDouble(time_step, "time step (in seconds)", value);
 	}
       
-    
       //=-=-=-=-=-=-=-=-=-=-=-=-=-=
       // LibGeoDecomp Options
       //=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -116,72 +135,94 @@ void CatchmentParameters::read_parameters(std::string parameter_filename)
       //=-=-=-=-=-=-=-=-=-=-=-=-=-=
       else if (lower == "ppm_pixels_per_cell")
 	{
-	  ppm_pixels_per_cell = atoi(value.c_str());
-	  
-      	  if(LibGeoDecomp::MPILayer().rank() == 0)
-	    {
-	      std::cout << "Pixels per cell (used in PPM output): " <<  ppm_pixels_per_cell << std::endl;
-	    }
+	  setInteger(ppm_pixels_per_cell, "Pixels per grid cell in .ppm output image(s)", value);
 	}
-	  
       else if (lower == "elevation_ppm")
 	{
-	  elevation_ppm = (value == "yes") ? true : false;
+	  setBoolean(elevation_ppm, value);
 	}
       else if (lower == "water_depth_ppm")
 	{
-	  water_depth_ppm = (value == "yes") ? true : false;
+	  setBoolean(water_depth_ppm, value);
 	}
       else if (lower == "elevation_ppm_interval")
 	{
-	  elevation_ppm_interval = atoi(value.c_str());
+	  setInteger(elevation_ppm_interval, "Interval writing .ppm output image for elevation", value);
 	}
       else if (lower == "water_depth_ppm_interval")
 	{
-	  water_depth_ppm_interval = atoi(value.c_str());
-	}
-      else if (lower == "water_depth_bov")
-	{
-	  water_depth_bov = (value == "yes") ? true : false;
-	}
-      else if (lower == "water_depth_bov_interval")
-	{
-	  water_depth_bov_interval = atoi(value.c_str());
-	}
-      else if (lower == "water_depth_visit")
-	{
-	  water_depth_visit = (value == "yes") ? true : false;
-	}
-      else if (lower == "water_depth_visit_interval")
-	{
-	  water_depth_visit_interval = atoi(value.c_str());
+	  setInteger(water_depth_ppm_interval, "Interval writing .ppm output image for water depth", value);
 	}
       else if (lower == "elevation_netcdf")
 	{
-	  elevation_netcdf = (value == "yes") ? true : false;
+	  setBoolean(elevation_netcdf, value);
 	}
       else if (lower == "water_depth_netcdf")
 	{
-	  water_depth_netcdf = (value == "yes") ? true : false;
+	  setBoolean(water_depth_netcdf, value);
 	}
       else if (lower == "elevation_netcdf_interval")
 	{
-	  elevation_netcdf_interval = atoi(value.c_str());
-	  if(LibGeoDecomp::MPILayer().rank() == 0)
-	  {
-	      std::cout << "elevation_netcdf_interval: " << elevation_netcdf_interval  << std::endl;
-	  }
+	  setInteger(elevation_netcdf_interval, "Interval writing netCDF output for elevation", value);
 	}
       else if (lower == "water_depth_netcdf_interval")
 	{
-	  water_depth_netcdf_interval = atoi(value.c_str());
+	  setInteger(water_depth_netcdf_interval, "Interval writing netCDF output for water_depth", value);
 	}
     }
-
+  
   if(LibGeoDecomp::MPILayer().rank() == 0)
     {
-      std::cout << "No other parameters found, parameter ingestion complete."
-		<< std::endl;
+      std::cout << "No other parameters found, parameter ingestion complete." << std::endl;
     }
 }
 
+
+void CatchmentParameters::setBoolean(bool& parameter, std::string value)
+{
+  parameter = (value == "yes") ? true : false;
+}
+
+
+void CatchmentParameters::setInteger(int& parameter, std::string name, std::string value)
+{
+  parameter = atoi(value.c_str());
+
+  if(LibGeoDecomp::MPILayer().rank() == 0)
+    {
+      std::cout << name + ": " << parameter << std::endl;
+    }
+}
+
+
+void CatchmentParameters::setUnsignedInteger(unsigned& parameter, std::string name, std::string value)
+{
+  parameter = atoi(value.c_str());
+
+  if(LibGeoDecomp::MPILayer().rank() == 0)
+    {
+      std::cout << name + ": " << parameter << std::endl;
+    }
+}
+
+
+void CatchmentParameters::setString(std::string& parameter, std::string name, std::string value)
+{
+  parameter = value;
+  
+  if(LibGeoDecomp::MPILayer().rank() == 0)
+    {
+      std::cout << name + ": " << parameter << std::endl;
+    }  
+}
+
+
+void CatchmentParameters::setDouble(double& parameter, std::string name, std::string value)
+{
+  parameter = atof(value.c_str());
+  
+  if(LibGeoDecomp::MPILayer().rank() == 0)
+    {
+      std::cout << name + ": " << parameter << std::endl;
+    }
+}

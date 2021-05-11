@@ -11,7 +11,6 @@
 #include <libgeodecomp/io/ppmwriter.h>
 #include <libgeodecomp/io/tracingwriter.h>
 #include <libgeodecomp/io/collectingwriter.h>
-#include <libgeodecomp/io/bovwriter.h>
 #include <libgeodecomp/io/parallelwriter.h>
 #include <libgeodecomp/io/pnetcdfwriter.h>
 #include <libgeodecomp/io/pnetcdfinitializer.h>
@@ -32,33 +31,30 @@ int main(int argc, char *argv[])
     Typemaps::initializeMaps(); // initialize custom typemaps for HAIL-CAESAR
     LibGeoDecomp::MPILayer().barrier();
   
-    start(argc, argv);   // Print info to stdout and validate input 
+    start(argc, argv);   // Print info to stdout and validate input parameters
     std::string parameter_filename(argv[1]);
     
     // Read model parameters on each rank (can replace with MPI_Bcast from rank 0 should overhead ever become noticeable)
     CatchmentParameters parameters = CatchmentParameters(parameter_filename);
     
-    //LibGeoDecomp::SimpleInitializer<Cell> *initialiser = 0;
     LibGeoDecomp::Initializer<Cell> *initialiser = 0;
 
-    
-    if(parameters.debug)
-    {
-	// Initialise grid (each rank initialises its own subgrid)
-	initialiser = new DebugCellInitializer(parameters.xmax, parameters.ymax, parameters.no_of_iterations);
-    }
-    else
-    {
-	initialiser = new NetCDFInitializer(parameters);
-    }
 
-
+    // Initialise grid (each rank initialises its own subgrid)
+#ifdef HC_DEBUG
+    initialiser = new DebugCellInitializer(parameters.xmax, parameters.ymax, parameters.no_of_iterations);
+#else
+    initialiser = new NetCDFInitializer(parameters);
+#endif
 
     
+    //========
+    // SERIAL
+    //========
     if(parameters.simulator == "serial")
     {
 	LibGeoDecomp::SerialSimulator<Cell> *sim = new LibGeoDecomp::SerialSimulator<Cell>(initialiser);
-      
+	
 	// Set up visualisation outputs  
 	LibGeoDecomp::PPMWriter<Cell> *elevationPPMWriter = 0;
 	LibGeoDecomp::PPMWriter<Cell> *water_depthPPMWriter = 0;
@@ -91,53 +87,61 @@ int main(int argc, char *argv[])
 	// Write out simulation progress
 	if (LibGeoDecomp::MPILayer().rank() == 0)
 	{
-	    sim->addWriter(new LibGeoDecomp::TracingWriter<Cell>(1, parameters.no_of_iterations));
+	  sim->addWriter(new LibGeoDecomp::TracingWriter<Cell>(parameters.progress_interval, parameters.no_of_iterations));
 	}
       
 	if( LibGeoDecomp::MPILayer().rank() == 0){ std::cout << "\nStarting parallel simulation... \n\n"; }
 	sim->run();
 	LibGeoDecomp::MPILayer().barrier();
     }
-    else // Parallel
+    //=========
+    // PARALLEL
+    //=========
+    else 
     {
 	LibGeoDecomp::DistributedSimulator<Cell> *sim = 0;
       
 	// Choose LibGeoDecomp Simulator type
 	if(parameters.simulator == "striping")
 	{
-	    sim = new LibGeoDecomp::StripingSimulator<Cell>(
-		initialiser,
-		LibGeoDecomp::MPILayer().rank()? 0 : new LibGeoDecomp::NoOpBalancer(), 1);
+	  sim = new LibGeoDecomp::StripingSimulator<Cell>(initialiser,
+							  LibGeoDecomp::MPILayer().rank()? 0 : new LibGeoDecomp::NoOpBalancer(),
+							  1);
 	}
 	else if(parameters.simulator == "hipar")
 	{
-	    sim = new LibGeoDecomp::HiParSimulator<Cell, LibGeoDecomp::RecursiveBisectionPartition<2> >(
-		initialiser,
-		LibGeoDecomp::MPILayer().rank() ? 0 : new LibGeoDecomp::NoOpBalancer(), 1, 1);
+	  sim = new LibGeoDecomp::HiParSimulator<Cell, LibGeoDecomp::RecursiveBisectionPartition<2> >(initialiser,
+												      LibGeoDecomp::MPILayer().rank() ? 0 : new LibGeoDecomp::NoOpBalancer(),
+												      1,
+												      1);
 	}
 	
 	// Set up output to netCDF format
 	if(parameters.elevation_netcdf)
 	{
-	    LibGeoDecomp::PnetCDFWriter<Cell> *elevationPnetCDFWriter = new LibGeoDecomp::PnetCDFWriter<Cell>(
-		initialiser->gridDimensions(),
-		LibGeoDecomp::Selector<Cell>(&Cell::elevation, "elevation"),
-		"elevation",
-		parameters.elevation_netcdf_interval,
-	        parameters.no_of_iterations);
-		
-	    sim->addWriter(elevationPnetCDFWriter);
+	  LibGeoDecomp::PnetCDFWriter<Cell> *elevationPnetCDFWriter =
+	    new LibGeoDecomp::PnetCDFWriter<Cell>(initialiser->gridDimensions(),
+						  LibGeoDecomp::Selector<Cell>(&Cell::elevation, "elevation"),
+						  "elevation",
+						  parameters.elevation_netcdf_interval,
+						  parameters.no_of_iterations);
+	  // debug
+	  /*std::ostringstream debug;
+	  debug << "HC on rank " << LibGeoDecomp::MPILayer().rank() << ": elevation netCDF interval=" << parameters.elevation_netcdf_interval << std::endl;
+	  std::cout << debug.str();*/
+	  
+	  sim->addWriter(elevationPnetCDFWriter);
 	}
 	if(parameters.water_depth_netcdf)
 	{
-	    LibGeoDecomp::PnetCDFWriter<Cell> *waterDepthPnetCDFWriter = new LibGeoDecomp::PnetCDFWriter<Cell>(
-		initialiser->gridDimensions(),
-		LibGeoDecomp::Selector<Cell>(&Cell::water_depth, "water_depth"),
-		"water_depth",
-		parameters.water_depth_netcdf_interval,
-		parameters.no_of_iterations);
-	    
-	    sim->addWriter(waterDepthPnetCDFWriter);
+	  LibGeoDecomp::PnetCDFWriter<Cell> *waterDepthPnetCDFWriter =
+	    new LibGeoDecomp::PnetCDFWriter<Cell>(initialiser->gridDimensions(),
+						  LibGeoDecomp::Selector<Cell>(&Cell::water_depth, "water_depth"),
+						  "water_depth",
+						  parameters.water_depth_netcdf_interval,
+						  parameters.no_of_iterations);
+	  
+	  sim->addWriter(waterDepthPnetCDFWriter);
 	}
             
 	// Set up output to ppm
@@ -177,19 +181,11 @@ int main(int argc, char *argv[])
 	    LibGeoDecomp::CollectingWriter<Cell> *water_depthPPMCollectingWriter = new LibGeoDecomp::CollectingWriter<Cell>(water_depthPPMWriter);
 	    sim->addWriter(water_depthPPMCollectingWriter);
 	}
-	if(parameters.water_depth_bov)
-	{
-	    system("mkdir -p water_depth/bov");
-	    sim->addWriter(new LibGeoDecomp::BOVWriter<Cell>(
-			       LibGeoDecomp::Selector<Cell>(&Cell::water_depth, "water_depth"),
-			       "water_depth/bov/water_depth",
-			       parameters.water_depth_bov_interval));
-	}
       
 // Write out simulation progress
 	if (LibGeoDecomp::MPILayer().rank() == 0)
 	{
-	    sim->addWriter(new LibGeoDecomp::TracingWriter<Cell>(1, parameters.no_of_iterations));
+	  sim->addWriter(new LibGeoDecomp::TracingWriter<Cell>(parameters.progress_interval, parameters.no_of_iterations));
 	}
       
 	if( LibGeoDecomp::MPILayer().rank() == 0)

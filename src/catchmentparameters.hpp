@@ -10,21 +10,30 @@ public:
   
   void read_parameters(std::string parameter_filename);
   
-  // simulation parameters
-  unsigned no_of_iterations = 100;
+  void setBoolean(bool& parameter, std::string value);
+
+  void setInteger(int& parameter, std::string name, std::string value);
+
+  void setUnsignedInteger(unsigned& parameter, std::string name, std::string value);
+
+  void setString(std::string& parameter, std::string name, std::string value);
+
+  void setDouble(double& parameter, std::string name, std::string value);
+
+  
+  // Numerical parameters
   std::string simulator = "hipar";
-  bool debug = false;
-
-    
-  // for debugging only
-  int xmax;
-  int ymax;
-
-    
-  // input
+  unsigned no_of_iterations;
+  double time_step;
+  unsigned progress_interval = 1;
+  bool debug = false; 
+ 
+  // Input file information
   std::string dem_netcdf_file;
   std::string dem_netcdf_variable;
-    
+  double DX, DY; // should read these from netCDF metadata
+  double no_data_value;
+  
   // output
   bool elevation_ppm = false;
   bool elevation_bov = false;
@@ -43,9 +52,19 @@ public:
   int water_depth_visit_interval = 1;
   int water_depth_netcdf_interval = 1; 
   int ppm_pixels_per_cell = 10;
-  
+
+  // Hydrology
+  double edgeslope;
+  double courant_number; 
+  double hflow_threshold;
+  double mannings;
+  double froude_limit;
+
 
   
+  // for debugging only
+  int xmax;
+  int ymax;
   
 };
 

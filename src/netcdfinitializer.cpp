@@ -13,13 +13,15 @@ NetCDFInitializer::NetCDFInitializer(const CatchmentParameters params)
 void NetCDFInitializer::grid(LibGeoDecomp::GridBase<Cell, 2> *localGrid)
 {
     //LibGeoDecomp::CoordBox<2> localGridBoundingBox = localGrid->boundingBox();
+
+  // Call grid() from our Cell class to initialise cell types
+    Cell::grid(localGrid, globalDimensions);
     
     // Call grid() from base class LibGeoDecomp PnetCDFInitializer to initialize
     // grid values (elevation, etc.) from netCDF file(s)
     LibGeoDecomp::PnetCDFInitializer<Cell>::grid(localGrid);
     
-    // Call grid() from our Cell class to initialise cell types
-    Cell::grid(localGrid, globalDimensions);
+    
 }
 
 
