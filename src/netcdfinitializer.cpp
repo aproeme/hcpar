@@ -1,27 +1,20 @@
-#include <cell.hpp>
 #include <netcdfinitializer.hpp>
 
-
-NetCDFInitializer::NetCDFInitializer(const CatchmentParameters params)
-    : LibGeoDecomp::PnetCDFInitializer<Cell>(params.dem_netcdf_file,
-					     LibGeoDecomp::Selector<Cell>(&Cell::elevation, "elevation"),
-					     params.dem_netcdf_variable,
-					     params.no_of_iterations)
+NetCDFInitializer::NetCDFInitializer(const CatchmentParameters params) :
+    LibGeoDecomp::PnetCDFInitializer<Cell>(params.netCDFSources, params.no_of_iterations),
+    params(params)
 {}
-
 
 void NetCDFInitializer::grid(LibGeoDecomp::GridBase<Cell, 2> *localGrid)
 {
-    //LibGeoDecomp::CoordBox<2> localGridBoundingBox = localGrid->boundingBox();
-
-  // Call grid() from our Cell class to initialise cell types
-    Cell::grid(localGrid, globalDimensions);
-    
-    // Call grid() from base class LibGeoDecomp PnetCDFInitializer to initialize
-    // grid values (elevation, etc.) from netCDF file(s)
+    // Call grid() from LibGeoDecomp::PnetCDFInitializer base class
+    // to initialize grid values (elevation, etc.) from netCDF file(s)
     LibGeoDecomp::PnetCDFInitializer<Cell>::grid(localGrid);
     
-    
+    // Call grid() from Cell class to initialize celltypes.
+    // Relies on fact that globalDimensions is already set by
+    // LibGeoDecomp::PnetCDFInitializer
+    Cell::grid(localGrid, globalDimensions, params);
+        
 }
-
 

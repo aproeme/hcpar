@@ -39,7 +39,7 @@ void Cell::initialise_grid_value_updates(const COORD_MAP& neighborhood)
 template<typename COORD_MAP>
 void Cell::catchment_waterinputs(const COORD_MAP& neighborhood) 
 {
-  water_depth = water_depth + 0.0001;
+    //water_depth = water_depth + 0.0001;
 }
 
 
@@ -171,7 +171,8 @@ void Cell::flow_route_y(const COORD_MAP& neighborhood)
 template<typename COORD_MAP>
 void Cell::update_qx(const COORD_MAP& neighborhood, const double hflow, const double tempslope, const double flow_timestep)
 {
-  update_q(here_old.qx, qx, hflow, tempslope, flow_timestep);
+    std::cout << "update_qx" << std::endl;
+    update_q(here_old.qx, qx, hflow, tempslope, flow_timestep);
 }
 
 
@@ -187,6 +188,8 @@ void Cell::update_q(const double &q_old, double &q_new, const double hflow, cons
   q_new = ((q_old - (Cell::gravity * hflow * flow_timestep * tempslope)) \
 	   / (1.0 + Cell::gravity * hflow * flow_timestep * (Cell::mannings * Cell::mannings) \
 	      * std::abs(q_old) / std::pow(hflow, (10.0 / 3.0))));
+
+  std::cout << "q_new: " << q_new << std::endl;
 }
     
 
@@ -225,7 +228,7 @@ void Cell::discharge_check(const COORD_MAP& neighborhood, double &q, double neig
 
 double Cell::get_flow_timestep()
 {
-  return Cell::time_step;
+    return Cell::time_step;
 }
 
 
@@ -240,47 +243,57 @@ void Cell::depth_update(const COORD_MAP& neighborhood)
   double north_qy_old;
   double flow_timestep = get_flow_timestep();
   
-  switch (celltype){
+  switch (celltype)
+  {
   case Cell::INTERNAL:
   case Cell::EDGE_SOUTH:
   case Cell::EDGE_WEST:
   case Cell::CORNER_SW:
-    east_qx_old = east_old.qx;
-    north_qy_old = north_old.qy;
-    update_water_depth(neighborhood, east_qx_old, north_qy_old, flow_timestep);
-    break;
+      east_qx_old = east_old.qx;
+      north_qy_old = north_old.qy;
+      update_water_depth(neighborhood, east_qx_old, north_qy_old, flow_timestep);
+      break;
   case Cell::EDGE_EAST:
   case Cell::CORNER_SE:
-    east_qx_old = 0.0;
-    north_qy_old = north_old.qy;
-    update_water_depth(neighborhood, east_qx_old, north_qy_old, flow_timestep);
-    break;
+      east_qx_old = 0.0;
+      north_qy_old = north_old.qy;
+      update_water_depth(neighborhood, east_qx_old, north_qy_old, flow_timestep);
+      break;
   case Cell::EDGE_NORTH:
   case Cell::CORNER_NW:
-    east_qx_old = east_old.qx;
-    north_qy_old = 0.0;
-    update_water_depth(neighborhood, east_qx_old, north_qy_old, flow_timestep);
-    break;
+      east_qx_old = east_old.qx;
+      north_qy_old = 0.0;
+      update_water_depth(neighborhood, east_qx_old, north_qy_old, flow_timestep);
+      break;
   case Cell::CORNER_NE:
-    east_qx_old = 0.0;
-    north_qy_old = 0.0;
-    update_water_depth(neighborhood, east_qx_old, north_qy_old, flow_timestep);
-    break;
+      east_qx_old = 0.0;
+      north_qy_old = 0.0;
+      update_water_depth(neighborhood, east_qx_old, north_qy_old, flow_timestep);
+      break;
   case Cell::NODATA:
-    water_depth = 0.0;
-    break;
+      water_depth = 0.0;
+      break;
   default:
-    std::cout << "\n\n WARNING: no depth update rule specified for cell type " << Cell::CellType(int(celltype))<< "\n\n";
-    break;
+      std::cout << "\n\n WARNING: no depth update rule specified for cell type " << Cell::CellType(int(celltype))<< "\n\n";
+      break;
   }
+  
+  
+  
+  
 }
 
 
 template<typename COORD_MAP>
 void Cell::update_water_depth(const COORD_MAP& neighborhood, double east_qx_old, double north_qy_old, double flow_timestep)
 {
-  // add to water_depth already updated with rainfall during this time step in order to accumulate updates
-  water_depth = water_depth + flow_timestep * ( (east_qx_old - here_old.qx)/Cell::DX + (north_qy_old - here_old.qy)/Cell::DY );
+    // add to water_depth already updated with rainfall during this time step in order to accumulate updates
+    water_depth = water_depth + flow_timestep * ( (east_qx_old - here_old.qx)/Cell::DX + (north_qy_old - here_old.qy)/Cell::DY );
+    
+    if(water_depth > 0)
+    {
+	water_surface_elevation = elevation + water_depth;
+    }
 }
 
 

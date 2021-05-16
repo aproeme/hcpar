@@ -36,10 +36,6 @@ void start(int argc, char *argv[])
     }
 
   LibGeoDecomp::MPILayer().barrier();
-  
-  if(LibGeoDecomp::MPILayer().rank() == 0)
-    {
-      std::cout << "Parameter file is: " << argv[1] << std::endl;  
-    }
+
 }
 

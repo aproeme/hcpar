@@ -1,6 +1,8 @@
 #ifndef HC_CELL_H
 #define HC_CELL_H
 
+#include <catchmentparameters.hpp>
+
 #include <libgeodecomp/misc/apitraits.h>
 #include <libgeodecomp/storage/gridbase.h>
 
@@ -9,6 +11,9 @@
 #define east_old neighborhood[LibGeoDecomp::FixedCoord<  1,  0 >()]
 #define north_old neighborhood[LibGeoDecomp::FixedCoord< 0,  1 >()]
 #define south_old neighborhood[LibGeoDecomp::FixedCoord< 0, -1 >()]
+
+// forward declaration to resolve circular include dependency
+class CatchmentParameters;
 
 class Cell
 {
@@ -31,6 +36,7 @@ public:
     CellType celltype;
     double elevation;
     double water_depth;
+    double water_surface_elevation;
     double qx, qy;
     double time_step;
     double DX, DY;
@@ -41,11 +47,12 @@ public:
     double froude_limit;
     double gravity = 9.8;
     
-    Cell(CellType celltype_in = INTERNAL,
-	 double elevation_in = 0.0,
-	 double water_depth_in = 0.0,
-	 double qx_in = 0.0,
-	 double qy_in = 0.0,
+    Cell(CellType celltype = INTERNAL,
+	 double elevation = 0.0,
+	 double water_depth = 0.0,
+	 double water_surface_elevation = 0.0,
+	 double qx = 0.0,
+	 double qy = 0.0,
 	 double time_step = 1.0,
 	 double DX = 1.0,
 	 double DY = 1.0,
@@ -54,11 +61,12 @@ public:
 	 double hflow_threshold=1.0,
 	 double mannings = 1.0,
 	 double froude_limit = 1.0) :
-	celltype(celltype_in),
-	elevation(elevation_in),
-	water_depth(water_depth_in),
-	qx(qx_in),
-	qy(qy_in),
+	celltype(celltype),
+	elevation(elevation),
+	water_depth(water_depth),
+	water_surface_elevation(water_surface_elevation),
+	qx(qx),
+	qy(qy),
 	time_step(time_step),
 	DX(DX),
 	DY(DY),
@@ -69,11 +77,11 @@ public:
 	froude_limit(froude_limit)
 	{}
     
+
+    static void grid(LibGeoDecomp::GridBase<Cell, 2> *localGrid, LibGeoDecomp::Coord<2> globalDimensions, CatchmentParameters params);
     
-    static void grid(LibGeoDecomp::GridBase<Cell, 2> *localGrid, LibGeoDecomp::Coord<2> globalDimensions);
-    // static because other classes (initializers) should be able to call Cell::grid() without instantiating a Cell
+  template<typename COORD_MAP> inline void update(const COORD_MAP& neighborhood, unsigned nanoStep);
     
-    template<typename COORD_MAP> inline void update(const COORD_MAP& neighborhood, unsigned nanoStep);
     
 #ifndef HC_DEBUG
   template<typename COORD_MAP> inline void initialise_grid_value_updates(const COORD_MAP& neighborhood);

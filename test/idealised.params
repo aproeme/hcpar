@@ -1,0 +1,27 @@
+simulator:		 	  striping
+no_of_iterations:		  1000
+time_step:              	  3600
+progress_interval:		  100
+input_dem_netcdf_file:		  idealised.nc
+input_dem_netcdf_variable:	  Band1
+DX:				  10
+DY:				  10
+
+
+init_water_depth_above_elevation:	0.1
+init_lowest_inundated_elevation: 	1.8
+slope_on_edge_cell:            		0.001       
+courant_number:                		0.7         
+froude_num_limit:              		0.8         
+mannings_n:                    		0.04        
+hflow_threshold:               		0.001       
+
+
+# OUTPUT
+#=======
+output_elevation_netcdf:			yes
+output_elevation_netcdf_interval:		10000
+output_water_depth_netcdf:			yes
+output_water_depth_netcdf_interval:		1
+output_water_surface_elevation_netcdf:		yes
+output_water_surface_elevation_netcdf_interval: 1

@@ -26,7 +26,7 @@
 int main(int argc, char *argv[])
 {
     MPI_Init(&argc, &argv);
-  
+    
     LibGeoDecomp::Typemaps::initializeMaps(); // initialize LibGeoDecomp default typemaps (this commits MPI types)
     Typemaps::initializeMaps(); // initialize custom typemaps for HAIL-CAESAR
     LibGeoDecomp::MPILayer().barrier();
@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 	// Set up visualisation outputs  
 	LibGeoDecomp::PPMWriter<Cell> *elevationPPMWriter = 0;
 	LibGeoDecomp::PPMWriter<Cell> *water_depthPPMWriter = 0;
-	if(parameters.elevation_ppm)
+	if(parameters.output_elevation_ppm)
 	{
 	    system("mkdir -p elevation/ppm");
 	    elevationPPMWriter = new LibGeoDecomp::PPMWriter<Cell>(
@@ -66,12 +66,12 @@ int main(int argc, char *argv[])
 		0.0,
 		255.0,
 		"elevation/ppm/elevation",
-		parameters.elevation_ppm_interval,
-		LibGeoDecomp::Coord<2>(parameters.ppm_pixels_per_cell, parameters.ppm_pixels_per_cell));
+		parameters.output_elevation_ppm_interval,
+		LibGeoDecomp::Coord<2>(parameters.output_ppm_pixels_per_cell, parameters.output_ppm_pixels_per_cell));
 
 	    sim->addWriter(elevationPPMWriter);
 	}
-	if(parameters.water_depth_ppm)
+	if(parameters.output_water_depth_ppm)
 	{
 	    system("mkdir -p water_depth/ppm");
 	    water_depthPPMWriter = new LibGeoDecomp::PPMWriter<Cell>(
@@ -79,8 +79,8 @@ int main(int argc, char *argv[])
 		0.0,
 		1.0,
 		"water_depth/ppm/water_depth",
-		parameters.water_depth_ppm_interval,
-		LibGeoDecomp::Coord<2>(parameters.ppm_pixels_per_cell, parameters.ppm_pixels_per_cell));
+		parameters.output_water_depth_ppm_interval,
+		LibGeoDecomp::Coord<2>(parameters.output_ppm_pixels_per_cell, parameters.output_ppm_pixels_per_cell));
 
 	    sim->addWriter(water_depthPPMWriter);
 	}
@@ -117,35 +117,46 @@ int main(int argc, char *argv[])
 	}
 	
 	// Set up output to netCDF format
-	if(parameters.elevation_netcdf)
+	if(parameters.output_elevation_netcdf)
 	{
-	  LibGeoDecomp::PnetCDFWriter<Cell> *elevationPnetCDFWriter =
-	    new LibGeoDecomp::PnetCDFWriter<Cell>(initialiser->gridDimensions(),
-						  LibGeoDecomp::Selector<Cell>(&Cell::elevation, "elevation"),
-						  "elevation",
-						  parameters.elevation_netcdf_interval,
-						  parameters.no_of_iterations);
-	  // debug
-	  /*std::ostringstream debug;
-	  debug << "HC on rank " << LibGeoDecomp::MPILayer().rank() << ": elevation netCDF interval=" << parameters.elevation_netcdf_interval << std::endl;
-	  std::cout << debug.str();*/
-	  
-	  sim->addWriter(elevationPnetCDFWriter);
+	    LibGeoDecomp::PnetCDFWriter<Cell> *elevationPnetCDFWriter =
+		new LibGeoDecomp::PnetCDFWriter<Cell>(initialiser->gridDimensions(),
+						      LibGeoDecomp::Selector<Cell>(&Cell::elevation, "elevation"),
+						      "elevation",
+						      parameters.output_elevation_netcdf_interval,
+						      parameters.no_of_iterations);
+	    // debug
+	    /*std::ostringstream debug;
+	      debug << "HC on rank " << LibGeoDecomp::MPILayer().rank() << ": elevation netCDF interval=" << parameters.output_elevation_netcdf_interval << std::endl;
+	      std::cout << debug.str();*/
+	    
+	    sim->addWriter(elevationPnetCDFWriter);
 	}
-	if(parameters.water_depth_netcdf)
+	if(parameters.output_water_depth_netcdf)
 	{
-	  LibGeoDecomp::PnetCDFWriter<Cell> *waterDepthPnetCDFWriter =
-	    new LibGeoDecomp::PnetCDFWriter<Cell>(initialiser->gridDimensions(),
-						  LibGeoDecomp::Selector<Cell>(&Cell::water_depth, "water_depth"),
-						  "water_depth",
-						  parameters.water_depth_netcdf_interval,
-						  parameters.no_of_iterations);
-	  
-	  sim->addWriter(waterDepthPnetCDFWriter);
+	    LibGeoDecomp::PnetCDFWriter<Cell> *waterDepthPnetCDFWriter =
+		new LibGeoDecomp::PnetCDFWriter<Cell>(initialiser->gridDimensions(),
+						      LibGeoDecomp::Selector<Cell>(&Cell::water_depth, "water_depth"),
+						      "water_depth",
+						      parameters.output_water_depth_netcdf_interval,
+						      parameters.no_of_iterations);
+	    
+	    sim->addWriter(waterDepthPnetCDFWriter);
 	}
-            
-	// Set up output to ppm
-	if(parameters.elevation_ppm)
+	if(parameters.output_water_surface_elevation_netcdf)
+	{
+	    LibGeoDecomp::PnetCDFWriter<Cell> *waterSurfaceElevationPnetCDFWriter =
+		new LibGeoDecomp::PnetCDFWriter<Cell>(initialiser->gridDimensions(),
+						      LibGeoDecomp::Selector<Cell>(&Cell::water_surface_elevation, "water_surface_elevation"),
+						      "water_surface_elevation",
+						      parameters.output_water_surface_elevation_netcdf_interval,
+						      parameters.no_of_iterations);
+	  
+	    sim->addWriter(waterSurfaceElevationPnetCDFWriter);
+	}
+	
+        // Set up output to ppm
+	if(parameters.output_elevation_ppm)
 	{
 	    LibGeoDecomp::PPMWriter<Cell> *elevationPPMWriter = 0;
 	    if(LibGeoDecomp::MPILayer().rank() == 0)
@@ -156,14 +167,14 @@ int main(int argc, char *argv[])
 		    0.0,
 		    255.0,
 		    "elevation/ppm/elevation",
-		    parameters.elevation_ppm_interval,
-		    LibGeoDecomp::Coord<2>(parameters.ppm_pixels_per_cell, parameters.ppm_pixels_per_cell));
+		    parameters.output_elevation_ppm_interval,
+		    LibGeoDecomp::Coord<2>(parameters.output_ppm_pixels_per_cell, parameters.output_ppm_pixels_per_cell));
 	    }
 	    LibGeoDecomp::CollectingWriter<Cell> *elevationPPMCollectingWriter = new LibGeoDecomp::CollectingWriter<Cell>(elevationPPMWriter);
 
 	    sim->addWriter(elevationPPMCollectingWriter);
 	}
-	if(parameters.water_depth_ppm)
+	if(parameters.output_water_depth_ppm)
 	{
 	    LibGeoDecomp::PPMWriter<Cell> *water_depthPPMWriter = 0;
 	    if(LibGeoDecomp::MPILayer().rank() == 0)
@@ -174,9 +185,9 @@ int main(int argc, char *argv[])
 		    0.0,
 		    1.0,
 		    "water_depth/ppm/water_depth",
-		    parameters.water_depth_ppm_interval,
-		    LibGeoDecomp::Coord<2>(parameters.ppm_pixels_per_cell,
-					   parameters.ppm_pixels_per_cell));
+		    parameters.output_water_depth_ppm_interval,
+		    LibGeoDecomp::Coord<2>(parameters.output_ppm_pixels_per_cell,
+					   parameters.output_ppm_pixels_per_cell));
 	    }
 	    LibGeoDecomp::CollectingWriter<Cell> *water_depthPPMCollectingWriter = new LibGeoDecomp::CollectingWriter<Cell>(water_depthPPMWriter);
 	    sim->addWriter(water_depthPPMCollectingWriter);
