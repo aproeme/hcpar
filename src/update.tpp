@@ -39,7 +39,13 @@ void Cell::initialise_grid_value_updates(const COORD_MAP& neighborhood)
 template<typename COORD_MAP>
 void Cell::catchment_waterinputs(const COORD_MAP& neighborhood) 
 {
-    //water_depth = water_depth + 0.0001;
+    // rain in high places
+    if(here_old.elevation > 225)
+    {
+	water_depth += 0.0001;
+    }
+	
+//water_depth = water_depth + 0.0001;
 }
 
 
@@ -88,7 +94,7 @@ void Cell::flow_route_x(const COORD_MAP& neighborhood)
 
   if (here_old.water_depth > 0 || west_water_depth_old > 0)  // still deal with west_old.elevation == NODATA
     {
-      double hflow = std::max(here_old.elevation + here_old.water_depth, west_elevation_old + west_water_depth_old) - std::max(here_old.elevation, west_elevation_old);
+	hflow = std::max(here_old.elevation + here_old.water_depth, west_elevation_old + west_water_depth_old) - std::max(here_old.elevation, west_elevation_old);
 
       if (hflow > Cell::hflow_threshold)
 	{
@@ -150,7 +156,7 @@ void Cell::flow_route_y(const COORD_MAP& neighborhood)
 
   if (here_old.water_depth > 0 || south_water_depth_old > 0) // still deal with south_old.elevation == NODATA
     {
-      double hflow = std::max(here_old.elevation + here_old.water_depth, south_elevation_old + south_water_depth_old) - std::max(here_old.elevation, south_elevation_old);
+	hflow = std::max(here_old.elevation + here_old.water_depth, south_elevation_old + south_water_depth_old) - std::max(here_old.elevation, south_elevation_old);
       
       if (hflow > Cell::hflow_threshold)
 	{
@@ -171,7 +177,6 @@ void Cell::flow_route_y(const COORD_MAP& neighborhood)
 template<typename COORD_MAP>
 void Cell::update_qx(const COORD_MAP& neighborhood, const double hflow, const double tempslope, const double flow_timestep)
 {
-    std::cout << "update_qx" << std::endl;
     update_q(here_old.qx, qx, hflow, tempslope, flow_timestep);
 }
 
@@ -188,8 +193,6 @@ void Cell::update_q(const double &q_old, double &q_new, const double hflow, cons
   q_new = ((q_old - (Cell::gravity * hflow * flow_timestep * tempslope)) \
 	   / (1.0 + Cell::gravity * hflow * flow_timestep * (Cell::mannings * Cell::mannings) \
 	      * std::abs(q_old) / std::pow(hflow, (10.0 / 3.0))));
-
-  std::cout << "q_new: " << q_new << std::endl;
 }
     
 
@@ -198,7 +201,7 @@ void Cell::update_q(const double &q_old, double &q_new, const double hflow, cons
 // one cell to another - resulting in negative discharges
 // which causes a large instability to develop
 // - only in steep catchments really
-void Cell::froude_check(double &q, double hflow)
+void Cell::froude_check(double &q, const double hflow)
 {
   if ((std::abs(q / hflow) / std::sqrt(Cell::gravity * hflow)) > Cell::froude_limit) // correctly reads newly calculated value of q, not here_old.q
     {
@@ -292,7 +295,7 @@ void Cell::update_water_depth(const COORD_MAP& neighborhood, double east_qx_old,
     
     if(water_depth > 0)
     {
-	water_surface_elevation = elevation + water_depth;
+	water_level = elevation + water_depth;
     }
 }
 

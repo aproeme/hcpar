@@ -1,7 +1,48 @@
-simulator: 		 striping
-no_of_iterations:        100
-dem_netcdf_file:         boscastle_square_20m.nc
-dem_netcdf_variable:     Band1
+# INPUT
+========
+input_dem_netcdf_file:         		boscastle_square_20m.nc
+input_dem_netcdf_variable:     		Band1
+#input_water_depth_netcdf_file:  	water_depth_restart.nc
+#input_water_depth_netcdf_variable: 	water_depth
+DX:			 		20
+DY: 			 		20
 
-elevation_netcdf:        yes
-water_depth_netcdf:      yes
+
+# INITIAL CONDITIONS
+#===================
+#init_water_level:			20
+#init_water_depth_above_elevation: 	0.1
+#init_lowest_inundated_elevation:	225
+
+
+# HYDROLOGY
+#===========
+slope_on_edge_cell:            		0.005       
+courant_number:                		0.5         
+froude_num_limit:              		0.8         
+mannings_n:                    		0.04        
+hflow_threshold:               		0.0  #0.0001 
+
+
+# NUMERICS
+==========
+simulator:				striping
+no_of_iterations:        		1000
+time_step:               		300   # (seconds)
+progress_interval:       		100
+
+
+# OUTPUT
+#=======
+output_elevation:			netcdf
+output_water_depth:			netcdf	
+output_water_level:			netcdf
+output_qx:				netcdf
+output_qy:				netcdf
+output_hflow:				netcdf
+output_interval_elevation:		10000
+output_interval_water_depth:		1
+output_interval_water_level: 		1
+output_interval_qx:			1
+output_interval_qy:			1
+output_interval_hflow:			1

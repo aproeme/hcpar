@@ -1,7 +1,8 @@
 #include <netcdfinitializer.hpp>
 
-NetCDFInitializer::NetCDFInitializer(const CatchmentParameters params) :
-    LibGeoDecomp::PnetCDFInitializer<Cell>(params.netCDFSources, params.no_of_iterations),
+NetCDFInitializer::NetCDFInitializer(const CatchmentParameters params,
+				     const vector<LibGeoDecomp::netCDFSource<Cell>> netCDFSources) :
+    LibGeoDecomp::PnetCDFInitializer<Cell>(netCDFSources, params.no_of_iterations),
     params(params)
 {}
 
@@ -15,6 +16,5 @@ void NetCDFInitializer::grid(LibGeoDecomp::GridBase<Cell, 2> *localGrid)
     // Relies on fact that globalDimensions is already set by
     // LibGeoDecomp::PnetCDFInitializer
     Cell::grid(localGrid, globalDimensions, params);
-        
 }
 

@@ -1,4 +1,7 @@
+#ifndef HC_SELECTMPIDATATYPE_H
+#define HC_SELECTMPIDATATYPE_H
 
+#include <typemaps.h>
 
 template<typename Cell>
 class LibGeoDecomp::APITraits::SelectMPIDataType<Cell>  
@@ -10,3 +13,4 @@ public:
   }
 };
 
+#endif

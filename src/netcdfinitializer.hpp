@@ -7,7 +7,8 @@
 class NetCDFInitializer : public LibGeoDecomp::PnetCDFInitializer<Cell>
 {
 public:
-    NetCDFInitializer(const CatchmentParameters params);
+    NetCDFInitializer(const CatchmentParameters params,
+		      const vector<LibGeoDecomp::netCDFSource<Cell>> netCDFSources);
     
     void grid(LibGeoDecomp::GridBase<Cell, 2> *localGrid);
     

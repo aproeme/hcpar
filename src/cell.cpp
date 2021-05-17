@@ -41,10 +41,10 @@ void Cell::grid(LibGeoDecomp::GridBase<Cell, 2> *localGrid, LibGeoDecomp::Coord<
 
 		if(params.inundate_below_elevation)
 		{
-		    if(cell.elevation < params.init_water_surface_elevation)
+		    if(cell.elevation < params.init_water_level)
 		    {
-			cell.water_depth = params.init_water_surface_elevation - cell.elevation;
-			cell.water_surface_elevation = cell.elevation + cell.water_depth;
+			cell.water_depth = params.init_water_level - cell.elevation;
+			cell.water_level = cell.elevation + cell.water_depth;
 		    }
 		}
 		
@@ -53,7 +53,7 @@ void Cell::grid(LibGeoDecomp::GridBase<Cell, 2> *localGrid, LibGeoDecomp::Coord<
 		    if(cell.elevation > params.init_lowest_inundated_elevation)
 		    {
 			cell.water_depth = params.init_water_depth_above_elevation;
-			cell.water_surface_elevation = cell.elevation + cell.water_depth;
+			cell.water_level = cell.elevation + cell.water_depth;
 		    }
 		}
 

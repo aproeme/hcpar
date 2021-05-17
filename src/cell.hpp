@@ -1,8 +1,6 @@
 #ifndef HC_CELL_H
 #define HC_CELL_H
 
-#include <catchmentparameters.hpp>
-
 #include <libgeodecomp/misc/apitraits.h>
 #include <libgeodecomp/storage/gridbase.h>
 
@@ -11,6 +9,7 @@
 #define east_old neighborhood[LibGeoDecomp::FixedCoord<  1,  0 >()]
 #define north_old neighborhood[LibGeoDecomp::FixedCoord< 0,  1 >()]
 #define south_old neighborhood[LibGeoDecomp::FixedCoord< 0, -1 >()]
+
 
 // forward declaration to resolve circular include dependency
 class CatchmentParameters;
@@ -28,21 +27,31 @@ class Cell
     
     
 public:
-    enum CellType : int {INTERNAL=0,					\
-			 EDGE_WEST=1, EDGE_NORTH=2, EDGE_EAST=3, EDGE_SOUTH=4, \
-			 CORNER_NW=5, CORNER_NE=6, CORNER_SE=7, CORNER_SW=8, \
-			 NODATA=9, GHOST_BORDER=10};
-    
+    enum CellType : int {
+	INTERNAL=0,
+	EDGE_WEST=1,
+	EDGE_NORTH=2,
+	EDGE_EAST=3,
+	EDGE_SOUTH=4, 
+	CORNER_NW=5,
+	CORNER_NE=6,
+	CORNER_SE=7,
+	CORNER_SW=8,
+	NODATA=9,
+    };
+
+
     CellType celltype;
     double elevation;
     double water_depth;
-    double water_surface_elevation;
+    double water_level;
     double qx, qy;
+    double hflow;
+    double hflow_threshold;
     double time_step;
     double DX, DY;
     double edgeslope;
     double no_data_value;
-    double hflow_threshold;
     double mannings;
     double froude_limit;
     double gravity = 9.8;
@@ -50,7 +59,7 @@ public:
     Cell(CellType celltype = INTERNAL,
 	 double elevation = 0.0,
 	 double water_depth = 0.0,
-	 double water_surface_elevation = 0.0,
+	 double water_level = 0.0,
 	 double qx = 0.0,
 	 double qy = 0.0,
 	 double time_step = 1.0,
@@ -64,7 +73,7 @@ public:
 	celltype(celltype),
 	elevation(elevation),
 	water_depth(water_depth),
-	water_surface_elevation(water_surface_elevation),
+	water_level(water_level),
 	qx(qx),
 	qy(qy),
 	time_step(time_step),
