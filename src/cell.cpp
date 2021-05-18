@@ -1,7 +1,7 @@
 #include <cell.hpp>
 #include <catchmentparameters.hpp>
 
-void Cell::grid(LibGeoDecomp::GridBase<Cell, 2> *localGrid, LibGeoDecomp::Coord<2> globalDimensions, CatchmentParameters params)
+void Cell::grid(LibGeoDecomp::GridBase<Cell, 2> *localGrid, LibGeoDecomp::Coord<2> globalDimensions, CatchmentParameters parameters)
 {
     Cell::CellType celltype; 
     LibGeoDecomp::CoordBox<2> localBoundingBox = localGrid->boundingBox();
@@ -29,32 +29,56 @@ void Cell::grid(LibGeoDecomp::GridBase<Cell, 2> *localGrid, LibGeoDecomp::Coord<
 		else if (x == globalDimensions.x()-1) celltype = Cell::EDGE_EAST;
 		else celltype = Cell::INTERNAL;
 	    }
-	    
+
+
 	    LibGeoDecomp::Coord<2> coordinate(x, y);
 	    if (localBoundingBox.inBounds(coordinate))
 	    {
-		// Replace with more efficient bulk setting approach
-		// using LibGeoDecomp::GridBase::saveMember() as also
-		// used in e.g. LibGeoDecomp::PnetCDFInitializer
 		Cell cell = localGrid->get(coordinate);
-		cell.celltype = celltype;
+		
 
-		if(params.inundate_below_elevation)
+                // SET LISFLOOD CATCHMENT MODEL PARAMETERS
+		cell.time_step = parameters.time_step;
+		cell.DX = parameters.DX;
+		cell.DY = parameters.DY;
+		cell.edgeslope = parameters.edgeslope;
+		cell.hflow_threshold = parameters.hflow_threshold;
+		cell.mannings = parameters.mannings;
+		cell.froude_limit = parameters.froude_limit;
+
+		
+		// SET GRID QUANTITIES
+		cell.celltype = celltype;
+		cell.celltype_double = static_cast<double>(celltype);
+		
+		// Optionally set some specific (synthetic) initial
+		// conditions for testing / convenience - these are
+		// not mutually exclusive
+
+		// Set uniform inundation up to a certain elevation
+		if(parameters.inundate_below_elevation)
 		{
-		    if(cell.elevation < params.init_water_level)
+		    if(cell.elevation < parameters.init_water_level)
 		    {
-			cell.water_depth = params.init_water_level - cell.elevation;
-			cell.water_level = cell.elevation + cell.water_depth;
+			cell.water_depth = parameters.init_water_level - cell.elevation;
 		    }
 		}
 		
-		if(params.inundate_above_elevation)
+		// Initialise landscape with nonzero water depth above
+		// a certain elevation
+		if(parameters.inundate_above_elevation)
 		{
-		    if(cell.elevation > params.init_lowest_inundated_elevation)
+		    if(cell.elevation > parameters.init_lowest_inundated_elevation)
 		    {
-			cell.water_depth = params.init_water_depth_above_elevation;
+			cell.water_depth = parameters.init_water_depth_above_elevation;
 			cell.water_level = cell.elevation + cell.water_depth;
 		    }
+		}
+
+		// Always set water level (elevation of water surface) 
+		if(cell.water_depth > 0)
+		{
+		    cell.water_level = cell.elevation + cell.water_depth;
 		}
 
 		localGrid->set(coordinate, cell); 

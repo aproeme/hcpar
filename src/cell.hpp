@@ -42,6 +42,7 @@ public:
 
 
     CellType celltype;
+    double celltype_double;
     double elevation;
     double water_depth;
     double water_level;
@@ -55,27 +56,28 @@ public:
     double mannings;
     double froude_limit;
     double gravity = 9.8;
+
     
-    Cell(CellType celltype = INTERNAL,
+    Cell()
+	{}
+    
+
+    
+    Cell(double time_step,
+	 double DX,
+	 double DY,
+	 double edgeslope,
+	 double no_data_value,
+	 double hflow_threshold,
+	 double mannings,
+	 double froude_limit,
+	 CellType celltype = INTERNAL,
+	 double celltype_double = 0.0,
 	 double elevation = 0.0,
 	 double water_depth = 0.0,
 	 double water_level = 0.0,
 	 double qx = 0.0,
-	 double qy = 0.0,
-	 double time_step = 1.0,
-	 double DX = 1.0,
-	 double DY = 1.0,
-	 double edgeslope = 1.0,
-	 double no_data_value=-9999,
-	 double hflow_threshold=1.0,
-	 double mannings = 1.0,
-	 double froude_limit = 1.0) :
-	celltype(celltype),
-	elevation(elevation),
-	water_depth(water_depth),
-	water_level(water_level),
-	qx(qx),
-	qy(qy),
+	 double qy = 0.0) :
 	time_step(time_step),
 	DX(DX),
 	DY(DY),
@@ -83,7 +85,14 @@ public:
 	no_data_value(no_data_value),
 	hflow_threshold(hflow_threshold),
 	mannings(mannings),
-	froude_limit(froude_limit)
+	froude_limit(froude_limit),
+	celltype(celltype),
+	celltype_double(celltype_double),
+	elevation(elevation),
+	water_depth(water_depth),
+	water_level(water_level),
+	qx(qx),
+	qy(qy)
 	{}
     
 

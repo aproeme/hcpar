@@ -13,6 +13,7 @@
 
 // If modifying GridQuantity enum, always update Max to be equal to the highest-valued actual grid variable
 // See https://stackoverflow.com/questions/2102582/how-can-i-count-the-items-in-an-enum
+// celltype_double is for diagnosis
 enum GridQuantity : int {
     elevation=0,
     water_depth=1,
@@ -20,7 +21,8 @@ enum GridQuantity : int {
     qx=3,
     qy=4,
     hflow=5,
-    Max=hflow
+    celltype_double=6,
+    Max=celltype_double
 };
 
 
@@ -30,13 +32,7 @@ static const int maxGridQuantities()
 }
 
 
-static const std::vector<std::string> quantityString = { "elevation", "water_depth", "water_level", "qx", "qy", "hflow" };
-
-
-static const std::string quantityToString(GridQuantity quantity)
-{
-    return quantityString[quantity];
-}
+static const std::vector<std::string> gridQuantityString = { "elevation", "water_depth", "water_level", "qx", "qy", "hflow", "celltype" };
 
 
 // Selectors need to be provided to LibGeoDecomp, within which
@@ -48,6 +44,7 @@ static const std::vector<LibGeoDecomp::Selector<Cell>> gridQuantitySelectors = {
     LibGeoDecomp::Selector<Cell>(&Cell::qx, "qx"),
     LibGeoDecomp::Selector<Cell>(&Cell::qy, "qy"),
     LibGeoDecomp::Selector<Cell>(&Cell::hflow, "hflow"),
+    LibGeoDecomp::Selector<Cell>(&Cell::celltype_double, "celltype")
 };
 
 

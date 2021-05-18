@@ -40,6 +40,7 @@ output_water_level:			netcdf
 output_qx:				netcdf
 output_qy:				netcdf
 output_hflow:				netcdf
+
 output_interval_elevation:		10000
 output_interval_water_depth:		1
 output_interval_water_level: 		1

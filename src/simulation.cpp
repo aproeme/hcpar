@@ -11,9 +11,9 @@ void Simulation::gatherNetCDFSources()
     for (GridQuantity quantity : parameters.inputNetCDFGridQuantities)
     {
 	netCDFSources.push_back(LibGeoDecomp::netCDFSource<Cell> {
-		parameters.inputNetCDFFileName[quantity],
-		parameters.inputNetCDFVariableName[quantity],
-		gridQuantitySelectors[quantity]});
+		parameters.inputNetCDFFileName[static_cast<int>(quantity)],
+		parameters.inputNetCDFVariableName[static_cast<int>(quantity)],
+		gridQuantitySelectors[static_cast<int>(quantity)]});
     }
 }	
 
@@ -74,18 +74,18 @@ void Simulation::addWriters()
 	{
 	    pnetCDFWriters.push_back(new LibGeoDecomp::PnetCDFWriter<Cell>(
 					 initializer->gridDimensions(),
-					 gridQuantitySelectors[quantity],
-					 quantityToString(quantity),
-					 parameters.outputNetCDFInterval[quantity],
+					 gridQuantitySelectors[static_cast<int>(quantity)],
+					 gridQuantityString[static_cast<int>(quantity)],
+					 parameters.outputNetCDFInterval[static_cast<int>(quantity)],
 					 parameters.no_of_iterations));
 	    
-	    parallelSimulator->addWriter(pnetCDFWriters[quantity]);
+	    parallelSimulator->addWriter(pnetCDFWriters[static_cast<int>(quantity)]); 
+	}
 
-	    if (LibGeoDecomp::MPILayer().rank() == 0)
-	    {
-		LibGeoDecomp::TracingWriter<Cell> *progressWriter = new LibGeoDecomp::TracingWriter<Cell>(parameters.progress_interval, parameters.no_of_iterations);
-		parallelSimulator->addWriter(progressWriter);
-	    }
+	if (LibGeoDecomp::MPILayer().rank() == 0)
+	{
+	    LibGeoDecomp::TracingWriter<Cell> *progressWriter = new LibGeoDecomp::TracingWriter<Cell>(parameters.progress_interval, parameters.no_of_iterations);
+	    parallelSimulator->addWriter(progressWriter);
 	}
     }
 }
