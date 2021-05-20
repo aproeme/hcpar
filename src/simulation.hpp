@@ -10,6 +10,9 @@
 #include <catchmentparameters.hpp>
 #include <netcdfinitializer.hpp>
 #include <selectmpidatatype.tpp>
+#ifdef HC_DEBUG
+#include <debugcellinitializer.hpp>
+#endif
 
 #include <libgeodecomp/communication/mpilayer.h>
 #include <libgeodecomp/communication/typemaps.h>
@@ -34,15 +37,15 @@ public:
     // Read parameters on each rank
     // (can replace with MPI_Bcast from rank 0 if overhead ever becomes noticeable)
     Simulation(string parameterFile);
-    
-    void gatherNetCDFSources();
 
+    void gatherNetCDFSources();
+    
     void prepareInitializer();
     
     void prepareSimulator();
     
     void addWriters();
-
+    
     void run();
     
     CatchmentParameters parameters;

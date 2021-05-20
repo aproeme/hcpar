@@ -3,7 +3,7 @@
 #include <libgeodecomp/communication/typemaps.h>
 #include <libgeodecomp/communication/mpilayer.h>
 
-#include <typemaps.h>
+//#include <typemaps.h>
 #include <simulation.hpp>
 #include <debugcellinitializer.hpp>
 #include <catchmentparameters.hpp>
@@ -13,8 +13,8 @@ int main(int argc, char *argv[])
 {
     MPI_Init(&argc, &argv);
 
-    LibGeoDecomp::Typemaps::initializeMaps(); // initialize LibGeoDecomp default typemaps (this commits MPI types)
-    Typemaps::initializeMaps(); // initialize custom typemaps for HAIL-CAESAR
+    //LibGeoDecomp::Typemaps::initializeMaps(); // initialize LibGeoDecomp default typemaps (this commits MPI types)
+    //Typemaps::initializeMaps(); // initialize custom typemaps for HAIL-CAESAR
     LibGeoDecomp::MPILayer().barrier();
     
 #ifndef GIT_REVISION

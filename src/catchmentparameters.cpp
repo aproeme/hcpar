@@ -8,7 +8,6 @@ CatchmentParameters::CatchmentParameters(string parameter_filename)
     inputNetCDFFileName = vector<string>(maxGridQuantities());
     inputNetCDFVariableName = vector<string>(maxGridQuantities());
     outputNetCDFInterval = vector<int>(maxGridQuantities());
-    
     readParameters(parameter_filename);
 }
 
@@ -200,11 +199,18 @@ void CatchmentParameters::readParameters(string parameter_filename)
 		outputNetCDFGridQuantities.push_back(GridQuantity::qy);
 	    }
 	}
-	else if (lower == "output_hflow")
+	else if (lower == "output_hflowx")
 	{
 	    if(value == "netcdf")
 	    {
-		outputNetCDFGridQuantities.push_back(GridQuantity::hflow);
+		outputNetCDFGridQuantities.push_back(GridQuantity::hflowx);
+	    }
+	}
+	else if (lower == "output_hflowy")
+	{
+	    if(value == "netcdf")
+	    {
+		outputNetCDFGridQuantities.push_back(GridQuantity::hflowy);
 	    }
 	}
 	else if (lower == "output_celltype")
@@ -242,11 +248,16 @@ void CatchmentParameters::readParameters(string parameter_filename)
 	    notifyUser("  Interval writing output for qy", value);
 	    outputNetCDFInterval[GridQuantity::qy] = atoi(value.c_str());
 	}
-	else if (lower == "output_interval_hflow")
+	else if (lower == "output_interval_hflowx")
 	{
-	    notifyUser("  Interval writing output for hflow", value);
-	    outputNetCDFInterval[GridQuantity::hflow] = atoi(value.c_str());
+	    notifyUser("  Interval writing output for hflowx", value);
+	    outputNetCDFInterval[GridQuantity::hflowx] = atoi(value.c_str());
 	}
+	else if (lower == "output_interval_hflowy")
+	{
+	    notifyUser("  Interval writing output for hflowy", value);
+	    outputNetCDFInterval[GridQuantity::hflowy] = atoi(value.c_str());
+	} 
 	else if (lower == "output_interval_celltype")
 	{
 	    outputNetCDFInterval[GridQuantity::celltype_double] = atoi(value.c_str());
@@ -259,8 +270,6 @@ void CatchmentParameters::readParameters(string parameter_filename)
 	std::cout << "No other parameters found, parameter ingestion complete." << std::endl;
     }
 }
-
-
 
 
 void CatchmentParameters::notifyUser(string notification, string value)

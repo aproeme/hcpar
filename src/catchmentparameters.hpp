@@ -18,7 +18,7 @@ public:
     CatchmentParameters(string parameter_filename);
     
     void readParameters(string parameter_filename);
-    
+
     void notifyUser(string notification, string value);
     
     void setUnsignedIntegerParameter(unsigned& parameter, string name, string value);

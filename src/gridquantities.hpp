@@ -20,8 +20,9 @@ enum GridQuantity : int {
     water_level=2,
     qx=3,
     qy=4,
-    hflow=5,
-    celltype_double=6,
+    hflowx=5,
+    hflowy=6,
+    celltype_double=7,
     Max=celltype_double
 };
 
@@ -43,7 +44,8 @@ static const std::vector<LibGeoDecomp::Selector<Cell>> gridQuantitySelectors = {
     LibGeoDecomp::Selector<Cell>(&Cell::water_level, "water_level"),
     LibGeoDecomp::Selector<Cell>(&Cell::qx, "qx"),
     LibGeoDecomp::Selector<Cell>(&Cell::qy, "qy"),
-    LibGeoDecomp::Selector<Cell>(&Cell::hflow, "hflow"),
+    LibGeoDecomp::Selector<Cell>(&Cell::hflowx, "hflowx"),
+    LibGeoDecomp::Selector<Cell>(&Cell::hflowy, "hflowy"),
     LibGeoDecomp::Selector<Cell>(&Cell::celltype_double, "celltype")
 };
 

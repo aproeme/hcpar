@@ -21,7 +21,7 @@ slope_on_edge_cell:            		0.005
 courant_number:                		0.5         
 froude_num_limit:              		0.8         
 mannings_n:                    		0.04        
-hflow_threshold:               		0.0  #0.0001 
+hflow_threshold:               		0.0001 
 
 
 # NUMERICS
@@ -39,11 +39,13 @@ output_water_depth:			netcdf
 output_water_level:			netcdf
 output_qx:				netcdf
 output_qy:				netcdf
-output_hflow:				netcdf
+output_hflowx:				netcdf
+output_hflowy:				netcdf
 
 output_interval_elevation:		10000
 output_interval_water_depth:		1
 output_interval_water_level: 		1
 output_interval_qx:			1
 output_interval_qy:			1
-output_interval_hflow:			1
+output_interval_hflowx:			1
+output_interval_hflowy:			1

@@ -30,16 +30,28 @@ Typemaps::generateMapCell() {
     char fakeObject[sizeof(Cell)];
     Cell *obj = (Cell*)fakeObject;
 
-    const int count = 5;
+    const int count = 17;
     int lengths[count];
 
     // sort addresses in ascending order
     MemberSpec rawSpecs[] = {
+        MemberSpec(getAddress(&obj->DX), lookup<double >(), 1),
+        MemberSpec(getAddress(&obj->DY), lookup<double >(), 1),
         MemberSpec(getAddress(&obj->celltype), lookup<int >(), 1),
+        MemberSpec(getAddress(&obj->celltype_double), lookup<double >(), 1),
+        MemberSpec(getAddress(&obj->edgeslope), lookup<double >(), 1),
         MemberSpec(getAddress(&obj->elevation), lookup<double >(), 1),
+        MemberSpec(getAddress(&obj->froude_limit), lookup<double >(), 1),
+        MemberSpec(getAddress(&obj->hflow_threshold), lookup<double >(), 1),
+        MemberSpec(getAddress(&obj->hflowx), lookup<double >(), 1),
+        MemberSpec(getAddress(&obj->hflowy), lookup<double >(), 1),
+        MemberSpec(getAddress(&obj->mannings), lookup<double >(), 1),
+        MemberSpec(getAddress(&obj->no_data_value), lookup<double >(), 1),
         MemberSpec(getAddress(&obj->qx), lookup<double >(), 1),
         MemberSpec(getAddress(&obj->qy), lookup<double >(), 1),
-        MemberSpec(getAddress(&obj->water_depth), lookup<double >(), 1)
+        MemberSpec(getAddress(&obj->time_step), lookup<double >(), 1),
+        MemberSpec(getAddress(&obj->water_depth), lookup<double >(), 1),
+        MemberSpec(getAddress(&obj->water_level), lookup<double >(), 1)
     };
     std::sort(rawSpecs, rawSpecs + count, addressLower);
 

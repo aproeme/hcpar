@@ -1,6 +1,7 @@
 #include <cell.hpp>
 #include <catchmentparameters.hpp>
 
+
 void Cell::grid(LibGeoDecomp::GridBase<Cell, 2> *localGrid, LibGeoDecomp::Coord<2> globalDimensions, CatchmentParameters parameters)
 {
     Cell::CellType celltype; 
@@ -45,7 +46,6 @@ void Cell::grid(LibGeoDecomp::GridBase<Cell, 2> *localGrid, LibGeoDecomp::Coord<
 		cell.hflow_threshold = parameters.hflow_threshold;
 		cell.mannings = parameters.mannings;
 		cell.froude_limit = parameters.froude_limit;
-
 		
 		// SET GRID QUANTITIES
 		cell.celltype = celltype;
