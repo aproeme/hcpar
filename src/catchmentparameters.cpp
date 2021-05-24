@@ -16,7 +16,7 @@ void CatchmentParameters::readParameters(string parameter_filename)
 {
     if(LibGeoDecomp::MPILayer().rank() == 0)
     {
-	std::cout << "Reading simulation parameters from " << parameter_filename << "\n" << std::endl;
+	std::cout << "Reading simulation parameters from " << parameter_filename << std::endl;
     }
   
     std::ifstream infile;
@@ -64,8 +64,8 @@ void CatchmentParameters::readParameters(string parameter_filename)
 	else if (lower == "input_water_depth_netcdf_file")
 	{
 	    notifyUser("  netCDF water depth input file", value);
-	    inputNetCDFGridQuantities.push_back(GridQuantity::water_depth);
-	    inputNetCDFFileName[GridQuantity::water_depth] = value;
+	    inputNetCDFGridQuantities.push_back(GridQuantity::waterDepth);
+	    inputNetCDFFileName[GridQuantity::waterDepth] = value;
 	}
 	// NetCDF Variables
 	else if (lower == "input_dem_netcdf_variable")
@@ -76,7 +76,7 @@ void CatchmentParameters::readParameters(string parameter_filename)
 	else if (lower == "input_water_depth_netcdf_variable")
 	{
 	    notifyUser("  netCDF variable corresponding to water depth", value);
-	    inputNetCDFVariableName[GridQuantity::water_depth] = value;
+	    inputNetCDFVariableName[GridQuantity::waterDepth] = value;
 	}
 
 	// Grid initialisation options - 
@@ -87,19 +87,28 @@ void CatchmentParameters::readParameters(string parameter_filename)
 	else if (lower == "init_water_level")
 	{
 	    inundate_below_elevation = true;
-	    setDoubleParameter(init_water_level, "Setting initial water surface level to", value);
+	    setDoubleParameter(init_waterLevel, "Setting initial water surface level to", value);
 	}
 	else if (lower == "init_water_depth_above_elevation")
 	{
 	    inundate_above_elevation = true;
-	    setDoubleParameter(init_water_depth_above_elevation, "Setting water depth above minimum elevation to", value);
+	    setDoubleParameter(init_waterDepth_above_elevation, "  Setting water depth above minimum elevation to", value);
 	}
 	else if (lower == "init_lowest_inundated_elevation")
 	{
 	    inundate_above_elevation = true;
-	    setDoubleParameter(init_lowest_inundated_elevation, "Minimum elevation to inundate", value);
+	    setDoubleParameter(init_lowest_inundated_elevation, "  Minimum elevation to inundate", value);
 	}
-
+	else if (lower == "rain_above_elevation")
+	{
+	    rain_in_high_places = true;
+	    setDoubleParameter(rain_above_elevation, "  Rain above elevation", value);
+	}
+	else if (lower == "rain_rate")
+	{
+	    setDoubleParameter(physicalRainRate, "  Rain rate (mm/hour)", value);
+	}
+	
 	
 	//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	// LISFLOOD Hydrology Parameters
@@ -110,11 +119,11 @@ void CatchmentParameters::readParameters(string parameter_filename)
 	}
 	else if (lower == "hflow_threshold")
 	{
-	    setDoubleParameter(hflow_threshold, "  Horizontal flow threshold", value);
+	    setDoubleParameter(hflowThreshold, "  Horizontal flow threshold", value);
 	}
 	else if (lower == "courant_number")
 	{
-	    setDoubleParameter(courant_number, "  Courant number", value);
+	    setDoubleParameter(courantNumber, "  Courant number", value);
 	}
 	else if (lower == "mannings_n")
 	{
@@ -122,7 +131,11 @@ void CatchmentParameters::readParameters(string parameter_filename)
 	}
 	else if (lower == "froude_num_limit")
 	{
-	    setDoubleParameter(froude_limit, "  Froude number limit", value);
+	    setDoubleParameter(froudeLimit, "  Froude number limit", value);
+	}
+	else if (lower == "water_depth_erosion_threshold")
+	{
+	    setDoubleParameter(waterDepthErosionThreshold, "  Water depth erosion threshold", value);
 	}
       
       
@@ -137,17 +150,17 @@ void CatchmentParameters::readParameters(string parameter_filename)
 	{
 	    setUnsignedIntegerParameter(progress_interval, "  Interval reporting progress to stdout", value);
 	}
-	else if (lower == "DX")
+	else if (lower == "dx")
 	{
 	    setDoubleParameter(DX, "  DX", value);
 	}
-	else if (lower == "DY")
+	else if (lower == "dy")
 	{
 	    setDoubleParameter(DY, "  DY", value);
 	}
 	else if (lower == "timestep")
 	{
-	    setDoubleParameter(time_step, "  time step (in seconds)", value);
+	    setDoubleParameter(timestep, "  time step (in seconds)", value);
 	}
       
 	//=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -175,42 +188,42 @@ void CatchmentParameters::readParameters(string parameter_filename)
 	{
 	    if (value == "netcdf")
 	    {
-		outputNetCDFGridQuantities.push_back(GridQuantity::water_depth);
+		outputNetCDFGridQuantities.push_back(GridQuantity::waterDepth);
 	    }
 	}
 	else if (lower == "output_water_level")
 	{
 	    if(value == "netcdf")
 	    {
-		outputNetCDFGridQuantities.push_back(GridQuantity::water_level);
+		outputNetCDFGridQuantities.push_back(GridQuantity::waterLevel);
 	    }
 	}
 	else if (lower == "output_qx")
 	{
 	    if(value == "netcdf")
 	    {
-		outputNetCDFGridQuantities.push_back(GridQuantity::qx);
+		outputNetCDFGridQuantities.push_back(GridQuantity::qX);
 	    }
 	}
 	else if (lower == "output_qy")
 	{
 	    if(value == "netcdf")
 	    {
-		outputNetCDFGridQuantities.push_back(GridQuantity::qy);
+		outputNetCDFGridQuantities.push_back(GridQuantity::qY);
 	    }
 	}
 	else if (lower == "output_hflowx")
 	{
 	    if(value == "netcdf")
 	    {
-		outputNetCDFGridQuantities.push_back(GridQuantity::hflowx);
+		outputNetCDFGridQuantities.push_back(GridQuantity::hflowX);
 	    }
 	}
 	else if (lower == "output_hflowy")
 	{
 	    if(value == "netcdf")
 	    {
-		outputNetCDFGridQuantities.push_back(GridQuantity::hflowy);
+		outputNetCDFGridQuantities.push_back(GridQuantity::hflowY);
 	    }
 	}
 	else if (lower == "output_celltype")
@@ -231,32 +244,32 @@ void CatchmentParameters::readParameters(string parameter_filename)
 	else if (lower == "output_interval_water_depth")
 	{
 	    notifyUser("  Interval writing output for water depth", value);
-	    outputNetCDFInterval[GridQuantity::water_depth] = atoi(value.c_str());
+	    outputNetCDFInterval[GridQuantity::waterDepth] = atoi(value.c_str());
 	}
 	else if (lower == "output_interval_water_level")
 	{
 	    notifyUser("  Interval writing output for water level", value);
-	    outputNetCDFInterval[GridQuantity::water_level] = atoi(value.c_str());
+	    outputNetCDFInterval[GridQuantity::waterLevel] = atoi(value.c_str());
 	}
 	else if (lower == "output_interval_qx")
 	{
-	    notifyUser("  Interval writing output for qx", value);
-	    outputNetCDFInterval[GridQuantity::qx] = atoi(value.c_str());
+	    notifyUser("  Interval writing output for qX", value);
+	    outputNetCDFInterval[GridQuantity::qX] = atoi(value.c_str());
 	}
 	else if (lower == "output_interval_qy")
 	{
-	    notifyUser("  Interval writing output for qy", value);
-	    outputNetCDFInterval[GridQuantity::qy] = atoi(value.c_str());
+	    notifyUser("  Interval writing output for qY", value);
+	    outputNetCDFInterval[GridQuantity::qY] = atoi(value.c_str());
 	}
 	else if (lower == "output_interval_hflowx")
 	{
-	    notifyUser("  Interval writing output for hflowx", value);
-	    outputNetCDFInterval[GridQuantity::hflowx] = atoi(value.c_str());
+	    notifyUser("  Interval writing output for hflowX", value);
+	    outputNetCDFInterval[GridQuantity::hflowX] = atoi(value.c_str());
 	}
 	else if (lower == "output_interval_hflowy")
 	{
-	    notifyUser("  Interval writing output for hflowy", value);
-	    outputNetCDFInterval[GridQuantity::hflowy] = atoi(value.c_str());
+	    notifyUser("  Interval writing output for hflowY", value);
+	    outputNetCDFInterval[GridQuantity::hflowY] = atoi(value.c_str());
 	} 
 	else if (lower == "output_interval_celltype")
 	{

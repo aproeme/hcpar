@@ -1,4 +1,6 @@
 #include <simulation.hpp>
+#include <libgeodecomp/parallelization/serialsimulator.h>
+#include <libgeodecomp/parallelization/stripingsimulator.h>
 
 Simulation::Simulation(string parameterFile) :
     parameters(CatchmentParameters(parameterFile))

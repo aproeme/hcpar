@@ -10,14 +10,14 @@ DebugCellInitializer::DebugCellInitializer(int xmax,
   LibGeoDecomp::SimpleInitializer<Cell>(LibGeoDecomp::Coord<2>(xmax, ymax), no_of_iterations)
 {
     elevation = Array2D<double> (xmax, ymax, 255.0);
-    water_depth = Array2D<double> (xmax, ymax, 255.0);
+    waterDepth = Array2D<double> (xmax, ymax, 255.0);
     
     for (int x=0; x<xmax; x++)
     {
 	for (int y=0; y<ymax; y++)
 	{
 	    elevation[x][y] = (x+1)*(y+1);
-	    water_depth[x][y] = 10.0;
+	    waterDepth[x][y] = 10.0;
 	}
     }
 }
@@ -26,12 +26,12 @@ DebugCellInitializer::DebugCellInitializer(int xmax,
 DebugCellInitializer::DebugCellInitializer(int xmax,
 				 int ymax,
 				 Array2D<double>& elevation_in,
-				 Array2D<double>& water_depth_in,
+				 Array2D<double>& waterDepth_in,
 				 unsigned no_of_iterations) :
   LibGeoDecomp::SimpleInitializer<Cell>(LibGeoDecomp::Coord<2>(xmax, ymax), no_of_iterations)
 {
   elevation = elevation_in;
-  water_depth = water_depth_in;
+  waterDepth = waterDepth_in;
 }
 
 
@@ -70,7 +70,7 @@ void DebugCellInitializer::grid(LibGeoDecomp::GridBase<Cell, 2> *subgrid)
 	    {
 		Cell cell = subgrid->get(coordinate);
 		cell.elevation = elevation[x][y];
-		cell.water_depth = water_depth[x][y];
+		cell.waterDepth = waterDepth[x][y];
 		subgrid->set(coordinate, cell); 
 	    }
 	}

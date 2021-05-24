@@ -29,7 +29,7 @@ public:
     // Numerical parameters
     string simulator;
     unsigned no_of_iterations;
-    double time_step;
+    double timestep;
     unsigned progress_interval=1;
     
     // Inputs
@@ -37,10 +37,13 @@ public:
     vector<string> inputNetCDFFileName;
     vector<string> inputNetCDFVariableName;
     bool inundate_below_elevation = false;
+    double init_waterLevel;
     bool inundate_above_elevation = false;
-    double init_water_level;
-    double init_water_depth_above_elevation;
     double init_lowest_inundated_elevation;
+    double init_waterDepth_above_elevation;
+    bool rain_in_high_places = false;
+    double physicalRainRate; // (mm/hour)
+    double rain_above_elevation; // metres of elevation above which to rain
     double DX, DY; // should read these from netCDF metadata if available
     double no_data_value;
     
@@ -50,10 +53,11 @@ public:
     
     // Hydrology
     double edgeslope;
-    double courant_number; 
-    double hflow_threshold;
+    double courantNumber; 
+    double hflowThreshold;
     double mannings;
-    double froude_limit;
+    double froudeLimit;
+    double waterDepthErosionThreshold;
     
     // for testing & development
     int xmax;

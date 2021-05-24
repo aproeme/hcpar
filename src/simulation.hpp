@@ -16,9 +16,7 @@
 
 #include <libgeodecomp/communication/mpilayer.h>
 #include <libgeodecomp/communication/typemaps.h>
-#include <libgeodecomp/parallelization/simulator.h>
 #include <libgeodecomp/parallelization/serialsimulator.h>
-#include <libgeodecomp/parallelization/stripingsimulator.h>
 #include <libgeodecomp/parallelization/hiparsimulator.h>
 #include <libgeodecomp/geometry/partitions/recursivebisectionpartition.h>
 #include <libgeodecomp/loadbalancer/noopbalancer.h>

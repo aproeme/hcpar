@@ -1,8 +1,0 @@
-simulator: 		 striping
-no_of_iterations:        200
-dem_netcdf_file:         indexed.nc
-dem_netcdf_variable:     Band1
-
-elevation_netcdf:        yes
-water_depth_netcdf:      yes
-

@@ -12,7 +12,7 @@
 int main(int argc, char *argv[])
 {
     MPI_Init(&argc, &argv);
-
+    
     LibGeoDecomp::Typemaps::initializeMaps(); // initialize LibGeoDecomp default typemaps (this commits MPI types)
     Typemaps::initializeMaps(); // initialize custom typemaps for HAIL-CAESAR
     LibGeoDecomp::MPILayer().barrier();
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 	}
     }
     
-    //LibGeoDecomp::MPILayer().barrier();
+    LibGeoDecomp::MPILayer().barrier();
     
     std::string parameterFile = argv[1];
     Simulation simulation(parameterFile);

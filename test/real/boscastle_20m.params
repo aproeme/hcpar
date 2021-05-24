@@ -2,17 +2,8 @@
 ========
 input_dem_netcdf_file:         		boscastle_square_20m.nc
 input_dem_netcdf_variable:     		Band1
-#input_water_depth_netcdf_file:  	water_depth_restart.nc
-#input_water_depth_netcdf_variable: 	water_depth
 DX:			 		20
 DY: 			 		20
-
-
-# INITIAL CONDITIONS
-#===================
-#init_water_level:			20
-#init_water_depth_above_elevation: 	0.1
-#init_lowest_inundated_elevation:	225
 
 
 # HYDROLOGY
@@ -21,15 +12,18 @@ slope_on_edge_cell:            		0.005
 courant_number:                		0.5         
 froude_num_limit:              		0.8         
 mannings_n:                    		0.04        
-hflow_threshold:               		0.0001 
+hflow_threshold:               		0.00001 
+water_depth_erosion_threshold:		0.01
+rain_above_elevation:			0   # (max elevation is 255, setting to 0 means uniform rainfall everywhere)
+rain_rate:				1.0  # (mm/hour)
 
 
 # NUMERICS
 ==========
 simulator:				striping
 no_of_iterations:        		1000
-time_step:               		300   # (seconds)
-progress_interval:       		100
+timestep:               		300     # seconds (300 seconds * 1000 iterations ~ 82 model hours)
+progress_interval:       		10    # just printing out info to stdout
 
 
 # OUTPUT
@@ -42,7 +36,7 @@ output_qy:				netcdf
 output_hflowx:				netcdf
 output_hflowy:				netcdf
 
-output_interval_elevation:		10000
+output_interval_elevation:		10000 
 output_interval_water_depth:		1
 output_interval_water_level: 		1
 output_interval_qx:			1

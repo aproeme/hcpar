@@ -9,7 +9,7 @@
 // The update cycle for each physical timestep is separated into
 // nanoStep subcycles as required by the need for synchronisation to
 // ensure all cells can access updated Cell member values (e.g. grid
-// variables such as elevation and water_depth) belonging to their
+// variables such as elevation and waterDepth) belonging to their
 // neighbours.
 //
 // In general, when adding or modifying operations *within* an
@@ -38,26 +38,53 @@
 // at the start of the next nanoStep it stores the state of the
 // neighbouring cells at the end of the previous nanoStep. The first
 // time the value of a Cell member variable (e.g. a grid variable such
-// as elevation or water_depth) is needed within a nanoStep, one
-// should therefore read its value using the neighborhood object
-// (e.g. here.water_depth). If it is modified cumulatively in more
-// than one place during a nanoStep, care should be taken that all
-// modifications after the first one read the new value
-// (e.g. water_depth) rather than the neighborhood object. 
+// as elevation or waterDepth) is needed within a nanoStep, one should
+// therefore read its value using the neighborhood object
+// (e.g. here.waterDepth or west.elevation). If it is modified
+// cumulatively in more than one place during a nanoStep, care should
+// be taken that all modifications after the first one read the new
+// value (e.g. waterDepth) rather than the neighborhood object.
 
 
 
 template<typename COORD_MAP>
 void Cell::update(const COORD_MAP& neighborhood, unsigned nanoStep)
 {
-    // Full update cycle for timestep completes once all nanosteps
-    // complete. Each nanostep involves synchronisation, which impacts
-    // performance, so only create a new nanostep if all cells
+    /*
+    // Hydrological update cycle functionality from original
+    // HAIL-CAESAR that stills need to be accommodated:
+	  
+           // Compute the difference between water entering the
+	   // catchment_waterinputs (from rainfall) and water exiting
+	   // the catchment from its boundaries.  If this value meets a
+	   // user-defined threshold, the time step is automatically
+	   // increased.  
+	   set_inputoutput_diff();
+	   set_maximum_timestep();
+	   
+	   // Hydrological and flow routing processes
+	   // In reach mode, add the reach inputs and hydrology
+	   simulation.reach_water_and_sediment_input();
+    */
+    
+    // Quantities that will need to be computed across grid
+    // in order to apply CFL condition and set max timestep:
+    // maxDepth 
+    // waterOut
+        
+    // Full update cycle for one timestep completes once all nanosteps
+    // are completed. Each nanostep involves synchronisation, which
+    // impacts performance, so only create a new nanostep if all cells
     // absolutely need to be able to access the updated grid values of
     // their neighbours.
+
+    // Need to ensure that all grid variables (not just those that are
+    // modified) are retained from one nanoStep to the next, so point:
+    *this = here;
+    
     if(nanoStep == 0)
     {
-	catchmentWaterInputs(neighborhood);	
+	catchmentWaterInputs(neighborhood);
     }
     
     // New nanostep because we want to route the flow resulting from
@@ -65,8 +92,7 @@ void Cell::update(const COORD_MAP& neighborhood, unsigned nanoStep)
     // computed in nanoStep 0, so need to synchronise across all cells
     // first.
     if(nanoStep == 1) 
-    {
-	std::cout << "nanostep == 1" << std::endl;
+    {	
 	flowRoute(neighborhood);
     }
     
@@ -80,7 +106,7 @@ void Cell::update(const COORD_MAP& neighborhood, unsigned nanoStep)
     if(nanoStep == 3)
     {
 	// Water outputs from edges/catchment outlet 
-	//water_flux_out(neighborhood);
+	waterFluxOut(neighborhood);
     }
 }
 
