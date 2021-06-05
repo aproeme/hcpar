@@ -24,13 +24,9 @@ void Simulation::gatherNetCDFSources()
 void Simulation::prepareInitializer()
 {
     gatherNetCDFSources();
-    
-// Initialise grid (each rank initialises its own subgrid)
-#ifdef HC_DEBUG
-    initializer = new DebugCellInitializer(parameters.xmax, parameters.ymax, parameters.no_of_iterations);
-#else
+
+    // Initialise grid (each rank initialises its own subgrid)
     initializer = new NetCDFInitializer(parameters, netCDFSources);
-#endif
 }
 
 

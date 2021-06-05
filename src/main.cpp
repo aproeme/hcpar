@@ -5,7 +5,6 @@
 
 //#include <typemaps.h>
 #include <simulation.hpp>
-#include <debugcellinitializer.hpp>
 #include <catchmentparameters.hpp>
 
 
@@ -49,7 +48,7 @@ int main(int argc, char *argv[])
 	    exit(0);
 	}
     }
-    
+
     LibGeoDecomp::MPILayer().barrier();
     
     std::string parameterFile = argv[1];
@@ -57,8 +56,11 @@ int main(int argc, char *argv[])
     simulation.prepareInitializer();
     simulation.prepareSimulator();
     simulation.addWriters();
-    simulation.run();
 
+    LibGeoDecomp::MPILayer().barrier();
+    
+    simulation.run();
+    
     MPI_Finalize();  
     return 0;
 }

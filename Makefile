@@ -14,7 +14,7 @@ SOURCES := $(notdir $(shell ls $(SOURCE_DIR)/*.cpp))
 OBJECTS := $(SOURCES:.cpp=.o)
 
 IFLAGS := -I $(INCLUDE_DIR) -I $(LSDTOPOTOOLS_INCLUDE_DIR) -I $(GEODECOMP_DIR)/include -I $(BOOST_DIR)/include -I $(PNETCDF_DIR)/include -I ./ -I lib -I lib/TNT
-CFLAGS := -std=c++11 $(GITREV) -MD
+CXXFLAGS := -std=c++11 $(GITREV) -MD
 LDFLAGS := -L $(GEODECOMP_DIR)/lib -L $(BOOST_DIR)/lib 
 LIBS := -lgeodecomp -lboost_date_time
 
@@ -24,50 +24,46 @@ LDFLAGS += -L $(MPI_DIR)/lib
 LIBS += -lmpi
 endif
 
-# hc build settings
-HC_BUILD_DIR := build
-HC_EXE := bin/hc
-HC_OBJECTS := $(addprefix $(HC_BUILD_DIR)/, $(OBJECTS))
-HC_CFLAGS := $(CFLAGS) -Wfatal-errors -O3
-
-# hc_debug build settings 
-DEBUG_BUILD_DIR = build/debug
-DEBUG_EXE = bin/hc_debug
-DEBUG_OBJECTS = $(addprefix $(DEBUG_BUILD_DIR)/, $(OBJECTS))
-DEBUG_CFLAGS := $(CFLAGS) -Wfatal-errors -g -Og -DHC_DEBUG
-
+BUILD_DIR_DEBUG := build/debug
+BUILD_DIR := build
+EXE_DEBUG := bin/debug/hc
+EXE := bin/hc
+OBJECTS_DEBUG := $(addprefix $(BUILD_DIR_DEBUG)/, $(OBJECTS)) 
+OBJECTS := $(addprefix $(BUILD_DIR)/, $(OBJECTS))
+CXXFLAGS_DEBUG := $(CXXFLAGS) -Wfatal-errors -g -Og
+CXXFLAGS := $(CXXFLAGS) -Wfatal-errors -O3
 
 ########################
 # Build targets & rules
 ########################
 
-all: prep hc debug
+hc: $(EXE)
+
+debug: $(EXE_DEBUG)
 
 
-# Standard (hc) build rules
-hc: $(HC_EXE)
-
-$(HC_EXE): $(HC_OBJECTS) $(LSDTOPOTOOLS_OBJECTS)
+# Link
+$(EXE): $(OBJECTS) $(LSDTOPOTOOLS_OBJECTS)
 	@echo  " \n Linking... \n"
-	@echo " $(CXX) $(LDFLAGS) $(IFLAGS) $(LIBS) $^ -o $(HC_EXE)"; $(CXX) $(LDFLAGS) $(IFLAGS) $(LIBS) $^ -o $(HC_EXE)
+	@echo " $(CXX) $(LDFLAGS) $(IFLAGS) $(LIBS) $^ -o $(EXE)"; $(CXX) $(LDFLAGS) $(IFLAGS) $(LIBS) $^ -o $(EXE)
 
-$(HC_BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp
-	@echo " $(CXX) $(HC_CFLAGS) $(IFLAGS) -c -o $@ $<"; $(CXX) $(HC_CFLAGS) $(IFLAGS) -c -o $@ $<
-
--include $(HC_OBJECTS:.o=.d)  # ensures rebuild after any header (.hpp) or template (.tpp) files change (only works with GCC)
-
-
-# Debug (hc_debug) build rules
-debug: $(DEBUG_EXE)
-
-$(DEBUG_EXE): $(DEBUG_OBJECTS) $(LSDTOPOTOOLS_OBJECTS)
+$(EXE_DEBUG): $(OBJECTS_DEBUG) $(LSDTOPOTOOLS_OBJECTS)
 	@echo  " \n Linking... \n"
-	@echo " $(CXX) $(LDFLAGS) $(IFLAGS) $(LIBS) $^ -o $(DEBUG_EXE)"; $(CXX) $(LDFLAGS) $(IFLAGS) $(LIBS) $^ -o $(DEBUG_EXE)
+	@echo " $(CXX) $(LDFLAGS) $(IFLAGS) $(LIBS) $^ -o $(EXE_DEBUG)"; $(CXX) $(LDFLAGS) $(IFLAGS) $(LIBS) $^ -o $(EXE_DEBUG)
 
-$(DEBUG_BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp
-	@echo " $(CXX) $(DEBUG_CFLAGS) $(IFLAGS) -c -o $@ $<"; $(CXX) $(DEBUG_CFLAGS) $(IFLAGS) -c -o $@ $<
 
--include $(DEBUG_OBJECTS:.o=.d)  # ensures rebuild after any header (.hpp) or template (.tpp) files change (only works with GCC)
+# Compile
+$(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp
+	@mkdir -p bin $(BUILD_DIR)
+	@echo " $(CXX) $(CXXFLAGS) $(IFLAGS) -c -o $@ $<"; $(CXX) $(CXXFLAGS) $(IFLAGS) -c -o $@ $<
+
+-include $(OBJECTS:.o=.d)  # ensures rebuild after any header (.hpp) or template (.tpp) files change (only works with GCC)
+
+$(BUILD_DIR_DEBUG)/%.o: $(SOURCE_DIR)/%.cpp
+	@mkdir -p bin/debug $(BUILD_DIR_DEBUG)
+	@echo " $(CXX) $(CXXFLAGS_DEBUG) $(IFLAGS) -c -o $@ $<"; $(CXX) $(CXXFLAGS_DEBUG) $(IFLAGS) -c -o $@ $<
+
+-include $(OBJECTS_DEBUG:.o=.d)  # ensures rebuild after any header (.hpp) or template (.tpp) files change (only works with GCC)
 
 
 # LDSTopoTools build rules
@@ -75,13 +71,11 @@ LSDTopoTools: $(LSDTOPOTOOLS_OBJECTS)
 
 $(LSDTOPOTOOLS_BUILD_DIR)/%.o: $(LSDTOPOTOOLS_SOURCE_DIR)/%.cpp
 	@mkdir -p $(LSDTOPOTOOLS_BUILD_DIR)
-	@echo " $(CXX) $(HC_CFLAGS) $(IFLAGS) -c -o $@ $<"; $(CXX) $(HC_CFLAGS) $(IFLAGS) -c -o $@ $<
+	@echo " $(CXX) $(CXXFLAGS) $(IFLAGS) -c -o $@ $<"; $(CXX) $(CXXFLAGS) $(IFLAGS) -c -o $@ $<
 
 
 # Other rules
-prep:
-	@mkdir -p bin $(HC_BUILD_DIR) $(DEBUG_BUILD_DIR)
-
+.PHONY: prep
 
 typemaps: # only necessary to generate new MPI typemaps run if the model has been changed, not needed during normal build process
 	@echo " Generating xml using doxygen..."; echo "doxygen ./make/doxygen.conf"; doxygen ./make/doxygen.conf

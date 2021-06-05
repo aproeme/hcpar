@@ -9,10 +9,7 @@
 #include <cell.hpp>
 #include <catchmentparameters.hpp>
 #include <netcdfinitializer.hpp>
-#include <selectmpidatatype.tpp>
-#ifdef HC_DEBUG
-#include <debugcellinitializer.hpp>
-#endif
+//#include <selectmpidatatype.tpp>
 
 #include <libgeodecomp/communication/mpilayer.h>
 #include <libgeodecomp/communication/typemaps.h>
